@@ -88,6 +88,7 @@ class SummaryBloc {
   }
 
   Future<Null> switchMonth(int index, DateTime date) async {
+    print("Switch month to $date");
     final db = AccountingDBProvider.db;
     var result = await db.getGroupingMonthTotalAmount(
         date.year.toString(), date.month.toString().padLeft(2, "0"));

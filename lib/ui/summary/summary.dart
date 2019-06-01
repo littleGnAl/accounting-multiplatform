@@ -1,4 +1,5 @@
 import 'package:accountingmultiplatform/blocs/summary/summary_bloc.dart';
+import 'package:accountingmultiplatform/blocs/summary/summary_chart_data.dart';
 import 'package:accountingmultiplatform/ui/summary/summary_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,12 @@ class _SummaryPageState extends State<SummaryPage> {
   }
 
   @override
+  void dispose() {
+    _summaryBloc.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -42,13 +49,21 @@ class _SummaryPageState extends State<SummaryPage> {
             padding: EdgeInsets.only(bottom: 10),
             child: StreamBuilder(
               stream: _summaryBloc.summaryChartData,
-              builder: (context, snapshot) {
-                return SummaryChart(
-                  summaryChartData: snapshot.data,
-                  onSelectedIndexChanged: (index, date) {
-                    _summaryBloc.switchMonth(index, date);
-                  },
-                );
+              builder: (BuildContext context,
+                  AsyncSnapshot<SummaryChartData> snapshot) {
+                if (snapshot.hasData) {
+                  return SummaryChart(
+                    summaryChartData: snapshot.data,
+                    onSelectedIndexChanged: (index, date) {
+                      _summaryBloc.switchMonth(index, date);
+                    },
+                  );
+                } else {
+                  return Container(
+                    height: 0,
+                    width: 0,
+                  );
+                }
               },
             ),
           ),
