@@ -11,7 +11,8 @@ import 'package:flutter/services.dart';
 import 'blocs/accounting_bloc_provider.dart';
 import 'colors.dart';
 
-void main() => runApp(_AccountingApp(route: window.defaultRouteName == null ? "home" : window.defaultRouteName));
+void main() => runApp(_AccountingApp(
+    route: window.defaultRouteName == "/" ? "home" : window.defaultRouteName));
 
 class _AccountingApp extends StatelessWidget {
   final String _route;
