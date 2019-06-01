@@ -11,7 +11,7 @@ import 'package:flutter/services.dart';
 import 'blocs/accounting_bloc_provider.dart';
 import 'colors.dart';
 
-void main() => runApp(_AccountingApp(route: window.defaultRouteName));
+void main() => runApp(_AccountingApp(route: window.defaultRouteName == null ? "home" : window.defaultRouteName));
 
 class _AccountingApp extends StatelessWidget {
   final String _route;
@@ -49,7 +49,7 @@ class _AccountingApp extends StatelessWidget {
         "summary": (context) => SummaryPage()
       },
       home: AccountingBlocProvider(
-        child: _widgetForRoute("home"),
+        child: _widgetForRoute(_route),
       ),
     );
   }
