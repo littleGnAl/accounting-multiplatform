@@ -1,6 +1,9 @@
 import 'dart:math';
 
 import 'package:accountingmultiplatform/blocs/summary/summary_chart_data.dart';
+import 'package:accountingmultiplatform/blocs/summary/summary_chart_data_month.dart';
+import 'package:accountingmultiplatform/blocs/summary/summary_chart_data_point.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tuple/tuple.dart';
@@ -40,19 +43,19 @@ class SummaryChartPainter extends CustomPainter {
 
   double _max;
   double _min;
-  List<Tuple2<int, double>> _points;
+  BuiltList<SummaryChartDataPoint> _points;
 
-  List<Tuple2<String, DateTime>> _months;
+  BuiltList<SummaryChartDataMonth> _months;
 
-  List<String> _values;
+  BuiltList<String> _values;
 
   int _selectedIndex = -1;
 
-  set months(List<Tuple2<String, DateTime>> m) {
+  set months(BuiltList<SummaryChartDataMonth> m) {
     _months = m;
   }
 
-  set points(List<Tuple2<int, double>> p) {
+  set points(BuiltList<SummaryChartDataPoint> p) {
     _points = p;
     if (p.isEmpty) {
       _max = _min = -1.0;
@@ -60,10 +63,10 @@ class SummaryChartPainter extends CustomPainter {
       var tempMax = double.minPositive;
       var tempMin = double.maxFinite;
       _max = p.fold(tempMax, (pre, e) {
-        return max(pre, e.item2);
+        return max(pre, e.totalExpenses);
       });
       _min = p.fold(tempMin, (pre, e) {
-        return min(pre, e.item2);
+        return min(pre, e.totalExpenses);
       });
     }
   }
@@ -98,14 +101,14 @@ class SummaryChartPainter extends CustomPainter {
     double curX;
     double curY;
     var firstPoint = _points[0];
-    curX = _getXByIndex(size.width, firstPoint.item1);
-    curY = _getYByValue(size.height, firstPoint.item2);
+    curX = _getXByIndex(size.width, firstPoint.monthIndex);
+    curY = _getYByValue(size.height, firstPoint.totalExpenses);
     _curvePath.moveTo(curX, curY);
     for (var p in _points) {
       preX = curX;
       preY = curY;
-      curX = _getXByIndex(size.width, p.item1);
-      curY = _getYByValue(size.height, p.item2);
+      curX = _getXByIndex(size.width, p.monthIndex);
+      curY = _getYByValue(size.height, p.totalExpenses);
       double cpx = preX + (curX - preX) / 2.0;
       _curvePath.cubicTo(cpx, preY, cpx, curY, curX, curY);
     }
@@ -123,9 +126,9 @@ class SummaryChartPainter extends CustomPainter {
 
     for (var i = 0; i < _points.length; i++) {
       var item = _points[i];
-      var valueIndex = item.item1;
+      var valueIndex = item.monthIndex;
       var x = _getXByIndex(size.width, valueIndex);
-      var y = _getYByValue(size.height, item.item2);
+      var y = _getYByValue(size.height, item.totalExpenses);
 
       if (valueIndex == _selectedIndex) {
         canvas.drawCircle(Offset(x, y), SELECTED_DOT_RADIUS, _dotPaint);
@@ -184,7 +187,7 @@ class SummaryChartPainter extends CustomPainter {
 
     for (var i = 0; i < _months.length; i++) {
       var item = _months[i];
-      var month = item.item1;
+      var month = item.displayMonth;
       var tp = _createTextPainter(month, Color(0xff323232));
       tp.layout();
       var x = _getXByIndex(size.width, i) - tp.width / 2.0;
@@ -214,14 +217,15 @@ class SummaryChartPainter extends CustomPainter {
   Tuple2<int, DateTime> selectMonth(
       double height, double itemSpacing, int index, double x, double y) {
     var item = _points.firstWhere((e) {
-      return e.item1 == index;
+      return e.monthIndex == index;
     });
 
     var valueX = index * itemSpacing + itemSpacing / 2.0;
     if ((x - valueX).abs() <= TOUCH_RADIUS / 2.0 &&
-        (y - _getYByValue(height, item.item2).abs() <= TOUCH_RADIUS / 2.0)) {
+        (y - _getYByValue(height, item.totalExpenses).abs() <=
+            TOUCH_RADIUS / 2.0)) {
       var month = _months[index];
-      return Tuple2(index, month.item2);
+      return Tuple2(index, month.monthDateTime);
     }
 
     return null;

@@ -1,9 +1,10 @@
 import 'package:accountingmultiplatform/blocs/summary/summary_bloc.dart';
 import 'package:accountingmultiplatform/blocs/summary/summary_chart_data.dart';
+import 'package:accountingmultiplatform/blocs/summary/summary_list_item.dart';
 import 'package:accountingmultiplatform/ui/summary/summary_chart.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:tuple/tuple.dart';
 
 import '../../colors.dart';
 
@@ -70,8 +71,8 @@ class _SummaryPageState extends State<SummaryPage> {
           Expanded(
             child: StreamBuilder(
               stream: _summaryBloc.summaryList,
-              builder:
-                  (BuildContext context, AsyncSnapshot<List<Tuple2>> snapshot) {
+              builder: (BuildContext context,
+                  AsyncSnapshot<BuiltList<SummaryListItem>> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Container(child: CircularProgressIndicator());
                 }
@@ -83,8 +84,7 @@ class _SummaryPageState extends State<SummaryPage> {
                 return ListView.builder(
                     itemCount: snapshot.data.length,
                     itemBuilder: (BuildContext context, int index) {
-                      final item =
-                          snapshot.data[index] as Tuple2<String, String>;
+                      final item = snapshot.data[index];
 
                       return Column(
                         children: <Widget>[
@@ -92,12 +92,12 @@ class _SummaryPageState extends State<SummaryPage> {
                             padding: EdgeInsets.all(16.0),
                             child: Row(
                               children: <Widget>[
-                                Text(item.item1),
+                                Text(item.tagName),
                                 Expanded(
                                   child: Align(
                                     alignment: Alignment.centerRight,
                                     child: Text(
-                                      item.item2,
+                                      item.displayTotal,
                                       style: TextStyle(color: accentColor),
                                     ),
                                   ),

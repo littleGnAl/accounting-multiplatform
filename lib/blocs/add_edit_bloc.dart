@@ -62,12 +62,13 @@ class AddEditBloc {
   }
 
   void saveAccounting() async {
-    Accounting a = Accounting(
-        id: _editAccountingId,
-        amount: double.parse(_expensesSubject.value),
-        createTime: _timeSubject.value,
-        tagName: _labelSubject.value,
-        remarks: _remarkSubject.value);
+    Accounting a = Accounting((b) => b
+      ..id = _editAccountingId
+      ..amount = double.parse(_expensesSubject.value)
+      ..createTime = _timeSubject.value
+      ..tagName = _labelSubject.value
+      ..remarks = _remarkSubject.value);
+
     await _db.insertAccounting(a);
   }
 

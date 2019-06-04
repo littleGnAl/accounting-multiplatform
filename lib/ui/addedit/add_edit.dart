@@ -177,8 +177,11 @@ class _AddEditPageState extends State<AddEditPage> {
                 child: SizedBox.expand(
                   child: StreamBuilder<bool>(
                     stream: addEditBloc.isSubmitValid,
-                    builder: (context, snapshot) {
-                      final c = snapshot.data ? accentColor : unableColor;
+                    builder:
+                        (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                      final c = snapshot.hasData && snapshot.data
+                          ? accentColor
+                          : unableColor;
                       return RaisedButton(
                         child: Text(
                           "Confirm",
