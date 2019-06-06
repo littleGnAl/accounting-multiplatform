@@ -10,6 +10,11 @@ jobs:
           command: |
               bash .circleci/dartfmt_check.sh
       - run:
+          name: Running build runner
+          command: |
+            flutter pub get
+            flutter packages pub run build_runner build
+      - run:
           name: Running flutter doctor
           command: flutter doctor
       - run:

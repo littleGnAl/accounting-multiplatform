@@ -1,11 +1,18 @@
-import 'package:tuple/tuple.dart';
+import 'package:accountingmultiplatform/blocs/summary/summary_chart_data_month.dart';
+import 'package:accountingmultiplatform/blocs/summary/summary_chart_data_point.dart';
+import 'package:built_collection/built_collection.dart';
+import 'package:built_value/built_value.dart';
 
-class SummaryChartData {
-  final List<Tuple2<String, DateTime>> months;
-  final List<Tuple2<int, double>> points;
-  final List<String> values;
-  final int selectedIndex;
+part 'summary_chart_data.g.dart';
 
-  const SummaryChartData(
-      {this.months, this.points, this.values, this.selectedIndex});
+abstract class SummaryChartData
+    implements Built<SummaryChartData, SummaryChartDataBuilder> {
+  BuiltList<SummaryChartDataMonth> get months;
+  BuiltList<SummaryChartDataPoint> get points;
+  BuiltList<String> get values;
+  int get selectedIndex;
+
+  SummaryChartData._();
+  factory SummaryChartData([update(SummaryChartDataBuilder b)]) =
+      _$SummaryChartData;
 }

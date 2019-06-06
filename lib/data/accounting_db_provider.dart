@@ -1,8 +1,12 @@
 import 'dart:async';
 
+import 'package:accountingmultiplatform/data/serializers/serializers.dart';
+import 'package:accountingmultiplatform/data/total_expenses.dart';
+import 'package:accountingmultiplatform/data/total_expenses_of_grouping_tag.dart';
+import 'package:accountingmultiplatform/data/total_expenses_of_month.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:tuple/tuple.dart';
 
 import 'accounting.dart';
 
@@ -42,7 +46,7 @@ class AccountingDBProvider {
     });
   }
 
-  Future<List<Accounting>> queryPreviousAccounting(
+  Future<BuiltList<Accounting>> queryPreviousAccounting(
       DateTime lastDate, int limit) async {
     final db = await getDB();
     var result = await db.rawQuery(
@@ -52,26 +56,28 @@ class AccountingDBProvider {
         "DESC LIMIT ?",
         [lastDate.millisecondsSinceEpoch, limit]);
 
-    return result.isNotEmpty
-        ? result.map((a) => Accounting.fromMap(a)).toList()
-        : null;
+    return deserializeListOf<Accounting>(result);
   }
 
-  insertAccounting(Accounting accounting) async {
+  Future<Null> insertAccounting(Accounting accounting) async {
     final db = await getDB();
-    if (accounting.id != 0) {
-      await db.update(_tableName, accounting.toJson());
-    } else {
-      await db.rawInsert("""
-        INSERT INTO $_tableName (amount, createTime, tag_name, remarks)
-          VALUES (?, ?, ?, ?)
-        """, accounting.toInsertArgs());
-    }
+
+    await db.rawInsert("""
+    INSERT OR REPLACE INTO 
+      `accounting`(`id`,`amount`,`createTime`,`tag_name`,`remarks`) 
+    VALUES (nullif(?, 0),?,?,?,?)
+    """, [
+      accounting.id,
+      accounting.amount,
+      accounting.createTime.millisecondsSinceEpoch,
+      accounting.tagName,
+      accounting.remarks
+    ]);
   }
 
   Future<Null> deleteAccountingById(int id) async {
     final db = await getDB();
-    var result = await db.rawDelete("""
+    await db.rawDelete("""
         DELETE FROM accounting WHERE id = ?
     """, [id]);
   }
@@ -80,26 +86,25 @@ class AccountingDBProvider {
     final db = await getDB();
     var result =
         await db.rawQuery("SELECT * FROM accounting WHERE id = ?", [id]);
-    return result.isNotEmpty
-        ? result.map((a) => Accounting.fromMap(a)).first
-        : null;
+
+    return deserializeListOf<Accounting>(result).first;
   }
 
   Future<double> totalExpensesOfDay(int millisecondsSinceEpoch) async {
     final db = await getDB();
     var timeInMillis = (millisecondsSinceEpoch ~/ 1000).toInt();
     var result = await db.rawQuery("""
-      SELECT SUM(amount)
+      SELECT SUM(amount) total
         FROM accounting
         WHERE datetime(createTime / 1000, 'unixepoch')
         BETWEEN datetime(?, 'unixepoch')
         AND datetime(? + 60 * 60 * 24, 'unixepoch')
     """, [timeInMillis, timeInMillis]);
 
-    return result[0]["SUM(amount)"];
+    return deserializeListOf<TotalExpenses>(result).first.total;
   }
 
-  Future<List<Tuple2<String, double>>> getMonthTotalAmount(
+  Future<BuiltList<TotalExpensesOfMonth>> getMonthTotalAmount(
       {int limit = 6}) async {
     final db = await getDB();
     var result = await db.rawQuery("""
@@ -111,14 +116,11 @@ class AccountingDBProvider {
       LIMIT ?
     """, [limit]);
 
-    return result.isNotEmpty
-        ? result
-            .map((r) => Tuple2<String, double>(r["year_month"], r["total"]))
-            .toList()
-        : null;
+    return deserializeListOf<TotalExpensesOfMonth>(result);
   }
 
-  Future<List<Tuple2<String, double>>> getGroupingTagOfLatestMonth() async {
+  Future<BuiltList<TotalExpensesOfGroupingTag>>
+      getGroupingTagOfLatestMonth() async {
     final db = await getDB();
     var result = await db.rawQuery("""
       SELECT SUM(amount) as total, tag_name, (SELECT createTime
@@ -133,14 +135,10 @@ class AccountingDBProvider {
       GROUP BY tag_name
       """);
 
-    return result.isNotEmpty
-        ? result
-            .map((r) => Tuple2<String, double>(r["tag_name"], r["total"]))
-            .toList()
-        : null;
+    return deserializeListOf<TotalExpensesOfGroupingTag>(result);
   }
 
-  Future<List<Tuple2<String, double>>> getGroupingMonthTotalAmount(
+  Future<BuiltList<TotalExpensesOfGroupingTag>> getGroupingMonthTotalAmount(
       String year, String month) async {
     final db = await getDB();
     var result = await db.rawQuery("""
@@ -151,10 +149,6 @@ class AccountingDBProvider {
     GROUP BY tag_name
     """, [year, month]);
 
-    return result.isNotEmpty
-        ? result
-            .map((r) => Tuple2<String, double>(r["tag_name"], r["total"]))
-            .toList()
-        : null;
+    return deserializeListOf<TotalExpensesOfGroupingTag>(result);
   }
 }

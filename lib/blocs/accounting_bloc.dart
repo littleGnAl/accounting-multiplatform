@@ -4,6 +4,7 @@ import 'dart:core';
 import 'package:accountingmultiplatform/data/accounting.dart';
 import 'package:accountingmultiplatform/data/accounting_db_provider.dart';
 import 'package:accountingmultiplatform/ui/home/home_list_item.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:intl/intl.dart';
 import 'package:rxdart/subjects.dart';
 
@@ -13,9 +14,9 @@ class AccountingBloc {
   final _db = AccountingDBProvider.db;
 
   final _accountingListSubject =
-      BehaviorSubject<List<HomeListViewItem>>.seeded([]);
+      BehaviorSubject<BuiltList<HomeListViewItem>>.seeded(BuiltList());
 
-  Stream<List<HomeListViewItem>> get accountings =>
+  Stream<BuiltList<HomeListViewItem>> get accountings =>
       _accountingListSubject.stream;
 
   int _currentPage = 1;
@@ -29,15 +30,14 @@ class AccountingBloc {
     _accountingListSubject.close();
   }
 
-  Future<List<HomeListViewItem>> _getAccountingByPage(
+  Future<BuiltList<HomeListViewItem>> _getAccountingByPage(
       {DateTime latestDate, int limit = _sizePerPage}) async {
     var preDayNum = _dayNumFormat.format(latestDate);
 
-    List<Accounting> list =
-        await _db.queryPreviousAccounting(latestDate, limit);
+    var list = await _db.queryPreviousAccounting(latestDate, limit);
 
     if (list == null || list.isEmpty) {
-      return [];
+      return BuiltList();
     }
 
     var newList = List<HomeListViewItem>();
@@ -58,7 +58,7 @@ class AccountingBloc {
           displayExpense: "¥${item.amount}"));
     }
 
-    return newList;
+    return BuiltList.of(newList);
   }
 
   Future<HomeListViewHeader> _createHeader(DateTime date) async {
@@ -78,29 +78,33 @@ class AccountingBloc {
       var last = lastItem.accounting;
       ++_currentPage;
 
-      List<HomeListViewItem> nextPageList = await _getAccountingByPage(
+      var nextPageList = await _getAccountingByPage(
           latestDate: last.createTime, limit: _sizePerPage);
 
-      var newList = List<HomeListViewItem>.from(preList)..addAll(nextPageList);
+      var newList = preList.toList()
+        ..addAll(nextPageList)
+        ..toSet()
+        ..toList();
 
-      _accountingListSubject.sink.add(newList.toSet().toList());
+      _accountingListSubject.sink.add(BuiltList.of(newList));
     }
   }
 
-  Future<List<HomeListViewItem>> _refresh() async {
+  Future<BuiltList<HomeListViewItem>> _refresh() async {
     var refreshList = await _getAccountingByPage(
         latestDate: DateTime.now(), limit: _currentPage * _sizePerPage);
     print("Refreshing list with: $refreshList");
 
-    if (refreshList == null || refreshList.isEmpty) return [];
+    if (refreshList == null || refreshList.isEmpty) return BuiltList();
+
+    var newList = refreshList.toList();
 
     var firstItem = refreshList[0];
     if (firstItem is HomeListViewContent) {
-      refreshList.insert(
-          0, await _createHeader(firstItem.accounting.createTime));
+      newList.insert(0, await _createHeader(firstItem.accounting.createTime));
     }
 
-    return refreshList;
+    return BuiltList.of(newList);
   }
 
   Future<Null> refreshAccountingList() async {

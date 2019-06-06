@@ -1,6 +1,7 @@
 import 'package:accountingmultiplatform/blocs/accounting_bloc.dart';
 import 'package:accountingmultiplatform/blocs/accounting_bloc_provider.dart';
 import 'package:accountingmultiplatform/data/accounting.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -38,10 +39,10 @@ class _HomePageState extends State<HomePage> {
         title: Text("Accounting"),
         actions: <Widget>[_getSummaryIconBtn()],
       ),
-      body: StreamBuilder<List<HomeListViewItem>>(
+      body: StreamBuilder<BuiltList<HomeListViewItem>>(
           stream: _accountingBloc.accountings,
           builder: (BuildContext context,
-              AsyncSnapshot<List<HomeListViewItem>> snapshot) {
+              AsyncSnapshot<BuiltList<HomeListViewItem>> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(child: CircularProgressIndicator());
             } else if (snapshot.hasData) {
@@ -178,7 +179,7 @@ class _HomePageState extends State<HomePage> {
     return StreamBuilder(
       stream: _accountingBloc.accountings,
       builder: (BuildContext context,
-          AsyncSnapshot<List<HomeListViewItem>> snapshot) {
+          AsyncSnapshot<BuiltList<HomeListViewItem>> snapshot) {
         var isBtnEnable = snapshot.hasData && snapshot.data.isNotEmpty;
 
         return IconButton(

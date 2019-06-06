@@ -2,21 +2,29 @@ import 'dart:async';
 import 'dart:core';
 
 import 'package:accountingmultiplatform/blocs/summary/summary_chart_data.dart';
+import 'package:accountingmultiplatform/blocs/summary/summary_chart_data_month.dart';
+import 'package:accountingmultiplatform/blocs/summary/summary_chart_data_point.dart';
+import 'package:accountingmultiplatform/blocs/summary/summary_list_item.dart';
 import 'package:accountingmultiplatform/data/accounting_db_provider.dart';
+import 'package:accountingmultiplatform/data/total_expenses_of_grouping_tag.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:intl/intl.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:tuple/tuple.dart';
 
 class SummaryBloc {
-  final _summaryChartDataSubject = BehaviorSubject.seeded(
-      SummaryChartData(months: [], points: [], values: [], selectedIndex: -1));
+  final _summaryChartDataSubject =
+      BehaviorSubject<SummaryChartData>.seeded(SummaryChartData((b) => b
+        ..months = ListBuilder(BuiltList<SummaryChartDataMonth>())
+        ..points = ListBuilder(BuiltList<SummaryChartDataPoint>())
+        ..values = ListBuilder<String>()
+        ..selectedIndex = -1));
   final _summaryListSubject =
-      BehaviorSubject<List<Tuple2<String, String>>>.seeded([]);
+      BehaviorSubject<BuiltList<SummaryListItem>>.seeded(BuiltList());
 
   Stream<SummaryChartData> get summaryChartData =>
       _summaryChartDataSubject.stream;
 
-  Stream<List<Tuple2<String, String>>> get summaryList =>
+  Stream<BuiltList<SummaryListItem>> get summaryList =>
       _summaryListSubject.stream;
 
   final DateFormat _monthFormat = DateFormat("MMM");
@@ -40,9 +48,9 @@ class SummaryBloc {
 
   Future<Null> getMonthTotalAmount() async {
     final db = AccountingDBProvider.db;
-    List<Tuple2<String, double>> result = await db.getMonthTotalAmount();
-    List<Tuple2<String, DateTime>> months = List();
-    List<Tuple2<int, double>> points = List();
+    var result = await db.getMonthTotalAmount();
+    List<SummaryChartDataMonth> months = List();
+    List<SummaryChartDataPoint> points = List();
     List<String> values = List();
 
     var now = DateTime.now();
@@ -53,7 +61,9 @@ class SummaryBloc {
       var tempMonth =
           DateTime.fromMillisecondsSinceEpoch(today.millisecondsSinceEpoch);
       var monthString = _monthFormat.format(tempMonth);
-      months.add(Tuple2(monthString, tempMonth));
+      months.add(SummaryChartDataMonth((b) => b
+        ..displayMonth = monthString
+        ..monthDateTime = tempMonth));
       today = DateTime(today.year, today.month + 1, today.day);
     }
 
@@ -61,25 +71,27 @@ class SummaryBloc {
 
     if (result.isNotEmpty) {
       var reverseList = result.reversed;
-      var latestMonth = _yearMonthFormat.parse(reverseList.last.item1);
+      var latestMonth = _yearMonthFormat.parse(reverseList.last.yearMonth);
       selectedIndex = _monthBetween(latestMonth, firstMonth);
 
       reverseList.forEach((monthTotal) {
-        var monthTotalDate = _yearMonthFormat.parse(monthTotal.item1);
+        var monthTotalDate = _yearMonthFormat.parse(monthTotal.yearMonth);
         if (monthTotalDate.isAtSameMomentAs(firstMonth) ||
             monthTotalDate.isAfter(firstMonth)) {
           var index = _monthBetween(monthTotalDate, firstMonth);
-          points.add(Tuple2(index, monthTotal.item2));
-          values.add("¥${monthTotal.item2}");
+          points.add(SummaryChartDataPoint((b) => b
+            ..monthIndex = index
+            ..totalExpenses = monthTotal.total));
+          values.add("¥${monthTotal.total}");
         }
       });
     }
 
-    _summaryChartDataSubject.sink.add(SummaryChartData(
-        months: months,
-        points: points,
-        values: values,
-        selectedIndex: selectedIndex));
+    _summaryChartDataSubject.sink.add(SummaryChartData((b) => b
+      ..months = ListBuilder<SummaryChartDataMonth>(months)
+      ..points = ListBuilder<SummaryChartDataPoint>(points)
+      ..values = ListBuilder<String>(values)
+      ..selectedIndex = selectedIndex));
   }
 
   int _monthBetween(DateTime date1, DateTime date2) {
@@ -94,19 +106,16 @@ class SummaryBloc {
         date.year.toString(), date.month.toString().padLeft(2, "0"));
 
     var old = _summaryChartDataSubject.value;
-    _summaryChartDataSubject.sink.add(SummaryChartData(
-        months: old.months,
-        points: old.points,
-        values: old.values,
-        selectedIndex: index));
+    _summaryChartDataSubject.sink
+        .add(old.rebuild((b) => b.selectedIndex = index));
 
     _summaryListSubject.sink.add(_createSummaryList(result));
   }
 
-  List<Tuple2<String, String>> _createSummaryList(
-      List<Tuple2<String, double>> list) {
-    return list
-        .map((l) => Tuple2<String, String>(l.item1, "¥${l.item2}"))
-        .toList();
+  BuiltList<SummaryListItem> _createSummaryList(
+      BuiltList<TotalExpensesOfGroupingTag> list) {
+    return BuiltList.of(list.map((l) => SummaryListItem((b) => b
+      ..tagName = l.tagName
+      ..displayTotal = "¥${l.total}")));
   }
 }
