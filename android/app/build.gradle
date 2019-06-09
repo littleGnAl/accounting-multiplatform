@@ -51,6 +51,10 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+
+    packagingOptions {
+        exclude 'META-INF/*.kotlin_module'
+    }
 }
 
 flutter {
@@ -58,7 +62,15 @@ flutter {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation project(":common")
+    implementation deps.kotlin.stdlib.jdk7
     testImplementation 'junit:junit:4.12'
     implementation "androidx.appcompat:appcompat:1.1.0-beta01"
+
+    implementation deps.sqldelight.driver.android
+
+    implementation 'com.facebook.stetho:stetho:1.5.1'
+
+    implementation deps.kotlin.serialiaztion.runtime.runtime
+    implementation deps.kotlin.coroutines.android
 }

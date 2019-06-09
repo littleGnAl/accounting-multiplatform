@@ -21,7 +21,6 @@ dependencies:
     sdk: flutter
 
   intl: ^0.15.7
-  sqflite: ^1.1.0
   rxdart: ^0.22.0
   tuple: ^1.0.2
   built_collection: ^4.2.2
