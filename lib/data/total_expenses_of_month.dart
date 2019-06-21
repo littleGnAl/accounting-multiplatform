@@ -5,7 +5,6 @@ part 'total_expenses_of_month.g.dart';
 
 abstract class TotalExpensesOfMonth
     implements Built<TotalExpensesOfMonth, TotalExpensesOfMonthBuilder> {
-  @BuiltValueField(wireName: "year_month")
   String get yearMonth;
 
   double get total;

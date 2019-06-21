@@ -1,0 +1,41 @@
+CREATE TABLE IF NOT EXISTS accounting (
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    amount REAL NOT NULL,
+    createTime INTEGER NOT NULL,
+    tag_name TEXT NOT NULL,
+    remarks TEXT
+);
+
+queryPreviousAccounting:
+SELECT * FROM accounting
+    WHERE createTime <= ?
+    ORDER BY createTime
+    DESC LIMIT ?;
+
+insertAccounting:
+INSERT OR REPLACE INTO
+    accounting(id, amount, createTime, tag_name, remarks)
+    VALUES (nullif(?, 0), ?, ?, ?, ?);
+
+deleteAccountingById:
+DELETE FROM accounting WHERE id = ?;
+
+getAccountingById:
+SELECT * FROM accounting WHERE id = ?;
+
+totalExpensesOfDay:
+SELECT SUM(amount) AS total
+    FROM accounting
+    WHERE datetime(createTime / 1000, 'unixepoch')
+    BETWEEN datetime(? + 0, 'unixepoch')
+    AND datetime(? + 60 * 60 * 24, 'unixepoch');
+
+getMonthTotalAmount:
+SELECT nullif(SUM(amount), 0.0) AS total, nullif(strftime('%Y-%m', createTime / 1000, 'unixepoch'), "") AS yearMonth
+  FROM accounting
+  WHERE strftime('%Y-%m', createTime / 1000, 'unixepoch') = ?;
+
+getGroupingMonthTotalAmount:
+SELECT SUM(amount) AS total, tag_name FROM accounting
+    WHERE strftime('%Y-%m', createTime / 1000, 'unixepoch') = ?
+    GROUP BY tag_name;

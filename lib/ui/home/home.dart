@@ -161,7 +161,7 @@ class _HomePageState extends State<HomePage> {
     final isNeedUpdate =
         await Navigator.pushNamed(context, "add_edit", arguments: id);
 
-    if (isNeedUpdate) {
+    if (isNeedUpdate != null && isNeedUpdate) {
       await _accountingBloc.refreshAccountingList();
     }
   }

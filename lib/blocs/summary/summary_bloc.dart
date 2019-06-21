@@ -54,6 +54,15 @@ class SummaryBloc {
     List<String> values = List();
 
     var now = DateTime.now();
+//    var yearMonthList = List<String>();
+//    for (var i = 5; i >= 0; i--) {
+//      var d = DateTime(now.year, now.month - 5, 1);
+//      yearMonthList.add("${d.year}-${d.month}");
+//    }
+
+
+
+
     var today = DateTime(now.year, now.month - 5, 1);
     var firstMonth =
         DateTime.fromMillisecondsSinceEpoch(today.millisecondsSinceEpoch);
@@ -102,8 +111,7 @@ class SummaryBloc {
   Future<Null> switchMonth(int index, DateTime date) async {
     print("Switch month to $date");
     final db = AccountingDBProvider.db;
-    var result = await db.getGroupingMonthTotalAmount(
-        date.year.toString(), date.month.toString().padLeft(2, "0"));
+    var result = await db.getGroupingMonthTotalAmount(date);
 
     var old = _summaryChartDataSubject.value;
     _summaryChartDataSubject.sink

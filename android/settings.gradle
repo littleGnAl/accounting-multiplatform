@@ -1,4 +1,4 @@
-include ':app'
+include ':app', ':common'
 
 def flutterProjectRoot = rootProject.projectDir.parentFile.toPath()
 
@@ -13,3 +13,5 @@ plugins.each { name, path ->
     include ":$name"
     project(":$name").projectDir = pluginDirectory
 }
+
+enableFeaturePreview('GRADLE_METADATA')

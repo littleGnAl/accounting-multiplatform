@@ -1,154 +1,97 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:accountingmultiplatform/data/serializers/serializers.dart';
-import 'package:accountingmultiplatform/data/total_expenses.dart';
 import 'package:accountingmultiplatform/data/total_expenses_of_grouping_tag.dart';
 import 'package:accountingmultiplatform/data/total_expenses_of_month.dart';
 import 'package:built_collection/built_collection.dart';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 import 'accounting.dart';
 
 class AccountingDBProvider {
+  static const _platform =
+      const MethodChannel("com.littlegnal.accountingmultiplatform/sqldelight");
+
   static final AccountingDBProvider db = AccountingDBProvider._();
 
-  static Database _dataBase;
-
-  static final String _tableName = "accounting";
+  final DateFormat _yearMonthFormat = DateFormat("yyyy-MM");
 
   AccountingDBProvider._();
 
-  Future<Database> getDB() async {
-    if (_dataBase != null) {
-      return _dataBase;
-    }
-
-    _dataBase = await _initDB();
-    return _dataBase;
-  }
-
-  _initDB() async {
-    var dbName = "accounting-db";
-    var dbPath = await getDatabasesPath();
-    var p = join(dbPath, dbName);
-
-    return await openDatabase(p, version: 1,
-        onCreate: (Database db, int version) async {
-      await db.execute(""
-          "CREATE TABLE IF NOT EXISTS `accounting` ("
-          "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
-          "`amount` REAL NOT NULL, "
-          "`createTime` INTEGER NOT NULL, "
-          "`tag_name` TEXT NOT NULL, "
-          "`remarks` TEXT"
-          ")");
-    });
-  }
-
   Future<BuiltList<Accounting>> queryPreviousAccounting(
       DateTime lastDate, int limit) async {
-    final db = await getDB();
-    var result = await db.rawQuery(
-        "SELECT * FROM $_tableName "
-        "WHERE createTime <= ? "
-        "ORDER BY createTime "
-        "DESC LIMIT ?",
-        [lastDate.millisecondsSinceEpoch, limit]);
+    var arguments = {
+      "lastDateTimeMilliseconds": lastDate.millisecondsSinceEpoch,
+      "limit": limit
+    };
+    var result =
+        await _platform.invokeMethod("queryPreviousAccounting", arguments);
 
-    return deserializeListOf<Accounting>(result);
+    return deserializeListOf<Accounting>(jsonDecode(result));
   }
 
   Future<Null> insertAccounting(Accounting accounting) async {
-    final db = await getDB();
+    var arguments = {
+      "id": accounting.id,
+      "amount": accounting.amount,
+      "createTime": accounting.createTime.millisecondsSinceEpoch,
+      "tagName": accounting.tagName,
+      "remarks": accounting.remarks
+    };
 
-    await db.rawInsert("""
-    INSERT OR REPLACE INTO 
-      `accounting`(`id`,`amount`,`createTime`,`tag_name`,`remarks`) 
-    VALUES (nullif(?, 0),?,?,?,?)
-    """, [
-      accounting.id,
-      accounting.amount,
-      accounting.createTime.millisecondsSinceEpoch,
-      accounting.tagName,
-      accounting.remarks
-    ]);
+    await _platform.invokeMethod("insertAccounting", arguments);
   }
 
   Future<Null> deleteAccountingById(int id) async {
-    final db = await getDB();
-    await db.rawDelete("""
-        DELETE FROM accounting WHERE id = ?
-    """, [id]);
+    var arguments = {"id": id};
+    await _platform.invokeMethod("deleteAccountingById", arguments);
   }
 
   Future<Accounting> getAccountingById(int id) async {
-    final db = await getDB();
-    var result =
-        await db.rawQuery("SELECT * FROM accounting WHERE id = ?", [id]);
+    var arguments = {"id": id};
+    var result = await _platform.invokeMethod("getAccountingById", arguments);
 
-    return deserializeListOf<Accounting>(result).first;
+    return deserialize<Accounting>(jsonDecode(result));
   }
 
   Future<double> totalExpensesOfDay(int millisecondsSinceEpoch) async {
-    final db = await getDB();
-    var timeInMillis = (millisecondsSinceEpoch ~/ 1000).toInt();
-    var result = await db.rawQuery("""
-      SELECT SUM(amount) total
-        FROM accounting
-        WHERE datetime(createTime / 1000, 'unixepoch')
-        BETWEEN datetime(?, 'unixepoch')
-        AND datetime(? + 60 * 60 * 24, 'unixepoch')
-    """, [timeInMillis, timeInMillis]);
+    var timeInMillis = millisecondsSinceEpoch ~/ 1000;
+    var arguments = {"timeMilliseconds": timeInMillis};
+    var result = await _platform.invokeMethod("totalExpensesOfDay", arguments);
 
-    return deserializeListOf<TotalExpenses>(result).first.total;
+    return result;
   }
 
   Future<BuiltList<TotalExpensesOfMonth>> getMonthTotalAmount(
-      {int limit = 6}) async {
-    final db = await getDB();
-    var result = await db.rawQuery("""
-    SELECT strftime('%Y-%m', createTime / 1000, 'unixepoch') year_month, 
-        SUM(amount) total
-      FROM accounting
-      GROUP BY year_month
-      ORDER BY year_month DESC
-      LIMIT ?
-    """, [limit]);
+      [DateTime latestMonth]) async {
+    var dateTime = latestMonth == null ? DateTime.now() : latestMonth;
+    var yearMonthList = List<String>();
+    for (var i = 0; i <= 6; i++) {
+      var d = DateTime(dateTime.year, dateTime.month - i, 1);
+      yearMonthList.add(_yearMonthFormat.format(d));
+    }
 
-    return deserializeListOf<TotalExpensesOfMonth>(result);
+    var arguments = {"yearAndMonthList": yearMonthList};
+    var result = await _platform.invokeMethod("getMonthTotalAmount", arguments);
+
+    return deserializeListOf<TotalExpensesOfMonth>(jsonDecode(result));
   }
 
-  Future<BuiltList<TotalExpensesOfGroupingTag>>
-      getGroupingTagOfLatestMonth() async {
-    final db = await getDB();
-    var result = await db.rawQuery("""
-      SELECT SUM(amount) as total, tag_name, (SELECT createTime
-        FROM accounting
-        ORDER BY createTime
-        LIMIT 1) lastTime
-      FROM accounting
-      WHERE strftime('%Y', createTime / 1000, 'unixepoch') =
-        strftime('%Y', lastTime / 1000, 'unixepoch') AND
-        strftime('%m', createTime / 1000, 'unixepoch') =
-          strftime('%m', lastTime / 1000, 'unixepoch')
-      GROUP BY tag_name
-      """);
+  Future<BuiltList<TotalExpensesOfGroupingTag>> getGroupingTagOfLatestMonth(
+      [DateTime latestMonth]) async {
+    var dateTime = latestMonth == null ? DateTime.now() : latestMonth;
 
-    return deserializeListOf<TotalExpensesOfGroupingTag>(result);
+    return getGroupingMonthTotalAmount(dateTime);
   }
 
   Future<BuiltList<TotalExpensesOfGroupingTag>> getGroupingMonthTotalAmount(
-      String year, String month) async {
-    final db = await getDB();
-    var result = await db.rawQuery("""
-    SELECT SUM(amount) as total, tag_name
-    FROM accounting
-    WHERE strftime('%Y', createTime / 1000, 'unixepoch') = ?
-      AND  strftime('%m', createTime / 1000, 'unixepoch') = ?
-    GROUP BY tag_name
-    """, [year, month]);
+      DateTime dateTime) async {
+    var arguments = {"yearAndMonth": _yearMonthFormat.format(dateTime)};
+    var result =
+        await _platform.invokeMethod("getGroupingMonthTotalAmount", arguments);
 
-    return deserializeListOf<TotalExpensesOfGroupingTag>(result);
+    return deserializeListOf<TotalExpensesOfGroupingTag>(jsonDecode(result));
   }
 }

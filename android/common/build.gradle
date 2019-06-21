@@ -1,0 +1,70 @@
+apply plugin: 'org.jetbrains.kotlin.multiplatform'
+apply plugin: 'com.squareup.sqldelight'
+apply plugin: 'kotlinx-serialization'
+
+sqldelight {
+    AccountingDB {
+        packageName = "com.littlegnal.accountingmultiplatform"
+    }
+}
+
+kotlin {
+    sourceSets {
+        commonMain.dependencies {
+            implementation deps.kotlin.stdlib.stdlib
+            implementation deps.kotlin.serialiaztion.runtime.common
+            implementation deps.kotlin.coroutines.common
+        }
+
+        androidMain.dependencies {
+            implementation deps.kotlin.stdlib.stdlib
+            implementation deps.sqldelight.runtimejvm
+            implementation deps.kotlin.serialiaztion.runtime.runtime
+            implementation deps.kotlin.coroutines.android
+        }
+
+        iosMain.dependencies {
+            implementation deps.kotlin.stdlib.stdlib
+            implementation deps.sqldelight.driver.ios
+            implementation deps.kotlin.serialiaztion.runtime.native
+            implementation deps.kotlin.coroutines.native
+        }
+    }
+
+    targets {
+        fromPreset(presets.jvm, 'android')
+        final def iOSTarget = System.getenv('SDK_NAME')?.startsWith("iphoneos") \
+                              ? presets.iosArm64 : presets.iosX64
+
+        fromPreset(iOSTarget, 'ios') {
+            binaries {
+                framework('common')
+            }
+        }
+    }
+}
+
+// workaround for https://youtrack.jetbrains.com/issue/KT-27170
+configurations {
+    compileClasspath
+}
+
+task packForXCode(type: Sync) {
+    final File frameworkDir = new File(buildDir, "xcode-frameworks")
+    final String mode = project.findProperty("XCODE_CONFIGURATION")?.toUpperCase() ?: 'DEBUG'
+    final def framework = kotlin.targets.ios.binaries.getFramework("common", mode)
+
+    inputs.property "mode", mode
+    dependsOn framework.linkTask
+
+    from { framework.outputFile.parentFile }
+    into frameworkDir
+
+    doLast {
+        new File(frameworkDir, 'gradlew').with {
+            text = "#!/bin/bash\nexport 'JAVA_HOME=${System.getProperty("java.home")}'\ncd '${rootProject.rootDir}'\n./gradlew \$@\n"
+            setExecutable(true)
+        }
+    }
+}
+tasks.build.dependsOn packForXCode
