@@ -20,9 +20,17 @@ buildscript {
                 ],
             ],
             'coroutines': [
+                'core': "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}",
                 'common': "org.jetbrains.kotlinx:kotlinx-coroutines-core-common:${versions.coroutines}",
                 'android': "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}",
                 'native': "org.jetbrains.kotlinx:kotlinx-coroutines-core-native:${versions.coroutines}",
+                'test': "org.jetbrains.kotlinx:kotlinx-coroutines-test:${versions.coroutines}"
+            ],
+            'test': [
+                'common': "org.jetbrains.kotlin:kotlin-test-common:${versions.kotlin}",
+                'annotations': "org.jetbrains.kotlin:kotlin-test-annotations-common:${versions.kotlin}",
+                'test': "org.jetbrains.kotlin:kotlin-test:${versions.kotlin}",
+                'junit': "org.jetbrains.kotlin:kotlin-test-junit:${versions.kotlin}"
             ],
         ],
         'sqldelight': [
@@ -31,7 +39,12 @@ buildscript {
             'driver': [
                 'ios': "com.squareup.sqldelight:ios-driver:${versions.sqldelight}",
                 'android': "com.squareup.sqldelight:android-driver:${versions.sqldelight}",
+                'jvm': "com.squareup.sqldelight:sqlite-driver:${versions.sqldelight}"
             ],
+        ],
+        'mockk': [
+            'common': "io.mockk:mockk-common:1.9.3",
+            'mockk': "io.mockk:mockk:1.9.3"
         ],
     ]
 

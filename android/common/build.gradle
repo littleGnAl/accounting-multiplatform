@@ -16,6 +16,25 @@ kotlin {
             implementation deps.kotlin.coroutines.common
         }
 
+        commonTest.dependencies {
+            implementation deps.kotlin.coroutines.core
+            implementation deps.kotlin.coroutines.common
+            implementation deps.kotlin.coroutines.test
+            implementation deps.kotlin.test.common
+            implementation deps.kotlin.test.annotations
+            implementation deps.mockk.common
+            implementation deps.mockk.mockk
+        }
+
+        androidTest.dependencies {
+            implementation deps.sqldelight.driver.jvm
+            implementation deps.kotlin.test.test
+            implementation deps.kotlin.test.junit
+            implementation deps.kotlin.coroutines.core
+            implementation deps.kotlin.coroutines.common
+            implementation deps.kotlin.coroutines.test
+        }
+
         androidMain.dependencies {
             implementation deps.kotlin.stdlib.stdlib
             implementation deps.sqldelight.runtimejvm

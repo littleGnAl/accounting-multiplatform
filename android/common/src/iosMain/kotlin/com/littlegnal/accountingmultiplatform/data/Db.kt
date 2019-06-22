@@ -10,7 +10,7 @@ object Db {
   private val driverRef = AtomicReference<SqlDriver?>(null)
   private val dbRef = AtomicReference<AccountingDB?>(null)
 
-  internal fun dbSetup(driver: SqlDriver) {
+  private fun dbSetup(driver: SqlDriver) {
     val db = createQueryWrapper(driver)
     driverRef.value = driver.freeze()
     dbRef.value = db.freeze()
@@ -23,7 +23,7 @@ object Db {
   }
 
   fun defaultDriver() {
-    Db.dbSetup(NativeSqliteDriver(Schema, "accounting-db.db"))
+    dbSetup(NativeSqliteDriver(Schema, "accounting-db.db"))
   }
 
   val instance: AccountingDB

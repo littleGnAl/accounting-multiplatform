@@ -26,8 +26,11 @@ class AccountingDBProvider {
       "lastDateTimeMilliseconds": lastDate.millisecondsSinceEpoch,
       "limit": limit
     };
-    var result =
-        await _platform.invokeMethod("queryPreviousAccounting", arguments);
+    var result = await _platform.invokeMethod(
+        "queryPreviousAccounting",
+        arguments);
+
+    print("queryPreviousAccounting result: $result");
 
     return deserializeListOf<Accounting>(jsonDecode(result));
   }

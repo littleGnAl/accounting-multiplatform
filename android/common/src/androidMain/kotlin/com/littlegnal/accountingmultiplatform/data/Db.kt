@@ -7,8 +7,6 @@ object Db {
   private var driverRef: SqlDriver? = null
   private var dbRef: AccountingDB? = null
 
-
-
   val ready: Boolean
     get() = driverRef != null
 
