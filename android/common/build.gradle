@@ -10,43 +10,59 @@ sqldelight {
 
 kotlin {
     sourceSets {
-        commonMain.dependencies {
-            implementation deps.kotlin.stdlib.stdlib
-            implementation deps.kotlin.serialiaztion.runtime.common
-            implementation deps.kotlin.coroutines.common
+        commonMain {
+            dependencies {
+                implementation deps.kotlin.stdlib.stdlib
+                implementation deps.kotlin.serialiaztion.runtime.common
+                implementation deps.kotlin.coroutines.common
+            }
         }
 
-        commonTest.dependencies {
-            implementation deps.kotlin.coroutines.core
-            implementation deps.kotlin.coroutines.common
-            implementation deps.kotlin.coroutines.test
-            implementation deps.kotlin.test.common
-            implementation deps.kotlin.test.annotations
-            implementation deps.mockk.common
-            implementation deps.mockk.mockk
+        commonTest {
+            dependencies {
+                implementation deps.kotlin.coroutines.core
+                implementation deps.kotlin.coroutines.common
+                implementation deps.kotlin.coroutines.test
+                implementation deps.kotlin.test.common
+                implementation deps.kotlin.test.annotations
+//                implementation deps.mockk.common
+//                implementation deps.mockk.mockk
+                implementation "io.mockk:mockk-common:1.9.3"
+                implementation "io.mockk:mockk:1.9.3"
+
+            }
         }
 
-        androidTest.dependencies {
-            implementation deps.sqldelight.driver.jvm
-            implementation deps.kotlin.test.test
-            implementation deps.kotlin.test.junit
-            implementation deps.kotlin.coroutines.core
-            implementation deps.kotlin.coroutines.common
-            implementation deps.kotlin.coroutines.test
+        androidTest {
+            dependencies {
+                implementation deps.kotlin.test.test
+                implementation deps.kotlin.test.junit
+            }
         }
 
-        androidMain.dependencies {
-            implementation deps.kotlin.stdlib.stdlib
-            implementation deps.sqldelight.runtimejvm
-            implementation deps.kotlin.serialiaztion.runtime.runtime
-            implementation deps.kotlin.coroutines.android
+        androidMain {
+            dependencies {
+                implementation deps.kotlin.stdlib.stdlib
+                implementation deps.sqldelight.runtimejvm
+                implementation deps.kotlin.serialiaztion.runtime.runtime
+                implementation deps.kotlin.coroutines.android
+            }
         }
 
-        iosMain.dependencies {
-            implementation deps.kotlin.stdlib.stdlib
-            implementation deps.sqldelight.driver.ios
-            implementation deps.kotlin.serialiaztion.runtime.native
-            implementation deps.kotlin.coroutines.native
+        iosMain {
+            dependencies {
+                implementation deps.kotlin.stdlib.stdlib
+                implementation deps.sqldelight.driver.ios
+                implementation deps.kotlin.serialiaztion.runtime.native
+                implementation deps.kotlin.coroutines.native
+            }
+        }
+
+        iosTest {
+            dependencies {
+                implementation "io.mockk:mockk-common:1.9.3"
+                implementation "io.mockk:mockk:1.9.3"
+            }
         }
     }
 
@@ -86,4 +102,19 @@ task packForXCode(type: Sync) {
         }
     }
 }
+
+task iosTest {
+    def device = project.findProperty("iosDevice")?.toString() ?: "iPhone 8"
+    dependsOn 'linkTestDebugExecutableIos'
+    group = JavaBasePlugin.VERIFICATION_GROUP
+    description = "Runs tests for target 'ios' on an iOS simulator"
+
+    doLast {
+        def binary = kotlin.targets.ios.compilations.test.getBinary('EXECUTABLE', 'DEBUG')
+        exec {
+            commandLine 'xcrun', 'simctl', 'spawn', device, binary.absolutePath
+        }
+    }
+}
+
 tasks.build.dependsOn packForXCode
