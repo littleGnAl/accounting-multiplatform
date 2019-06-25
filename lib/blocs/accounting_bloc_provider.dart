@@ -1,9 +1,10 @@
+import 'package:accountingmultiplatform/data/accounting_db_provider.dart';
 import 'package:flutter/widgets.dart';
 
 import 'accounting_bloc.dart';
 
 class AccountingBlocProvider extends InheritedWidget {
-  final accountingBloc = AccountingBloc();
+  final accountingBloc = AccountingBloc(AccountingDBProvider.db);
 
   AccountingBlocProvider({
     Key key,

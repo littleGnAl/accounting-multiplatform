@@ -9,9 +9,11 @@ import 'package:intl/intl.dart';
 import 'package:rxdart/subjects.dart';
 
 class AccountingBloc {
+  AccountingBloc(this._db);
+
   static const int _sizePerPage = 20;
 
-  final _db = AccountingDBProvider.db;
+  final AccountingDBProvider _db;
 
   final _accountingListSubject =
       BehaviorSubject<BuiltList<HomeListViewItem>>.seeded(BuiltList());
@@ -50,12 +52,12 @@ class AccountingBloc {
         preDayNum = dateNum;
       }
 
-      newList.add(HomeListViewContent(
-          accounting: item,
-          displayTime: _timeFormat.format(item.createTime),
-          displayLabel: item.tagName,
-          displayRemark: item.remarks,
-          displayExpense: "¥${item.amount}"));
+      newList.add(HomeListViewContent((b) => b
+        ..accounting = item.toBuilder()
+        ..displayTime = _timeFormat.format(item.createTime)
+        ..displayLabel = item.tagName
+        ..displayRemark = item.remarks
+        ..displayExpense = "¥${item.amount}"));
     }
 
     return BuiltList.of(newList);
@@ -68,31 +70,43 @@ class AccountingBloc {
     var sumOfDay =
         await _db.totalExpensesOfDay(tempDateTime.millisecondsSinceEpoch);
     var sumString = "Total (¥$sumOfDay)";
-    return HomeListViewHeader(displayDate: dateTitle, displayTotal: sumString);
+    return HomeListViewHeader((b) => b
+      ..displayDate = dateTitle
+      ..displayTotal = sumString);
   }
 
-  Future<Null> loadNextPage() async {
+  Future<Null> loadNextPage({int limit}) async {
+    var l = limit == 0 ? _sizePerPage : limit;
     var preList = _accountingListSubject.value;
     var lastItem = preList.last;
     if (lastItem is HomeListViewContent) {
       var last = lastItem.accounting;
       ++_currentPage;
 
-      var nextPageList = await _getAccountingByPage(
-          latestDate: last.createTime, limit: _sizePerPage);
+      var nextPageList =
+          await _getAccountingByPage(latestDate: last.createTime, limit: l);
 
-      var newList = preList.toList()
-        ..addAll(nextPageList)
-        ..toSet()
-        ..toList();
+      var newList = preList.toList();
+
+      // Force update the last HomeListViewHeader because the total value maybe
+      // changed
+      var lastHeaderIndex =
+          newList.lastIndexWhere((e) => e is HomeListViewHeader);
+      var newHeader = await _createHeader(last.createTime);
+      newList[lastHeaderIndex] = newHeader;
+
+      newList.addAll(nextPageList);
+      // Distinct all items
+      newList = newList.toSet().toList();
 
       _accountingListSubject.sink.add(BuiltList.of(newList));
     }
   }
 
-  Future<BuiltList<HomeListViewItem>> _refresh() async {
-    var refreshList = await _getAccountingByPage(
-        latestDate: DateTime.now(), limit: _currentPage * _sizePerPage);
+  Future<BuiltList<HomeListViewItem>> _refresh(
+      {DateTime latestDate, int limit = _sizePerPage}) async {
+    var refreshList =
+        await _getAccountingByPage(latestDate: latestDate, limit: limit);
     print("Refreshing list with: $refreshList");
 
     if (refreshList == null || refreshList.isEmpty) return BuiltList();
@@ -107,8 +121,10 @@ class AccountingBloc {
     return BuiltList.of(newList);
   }
 
-  Future<Null> refreshAccountingList() async {
-    _accountingListSubject.sink.add(await _refresh());
+  Future<Null> refreshAccountingList({DateTime latestDate, int limit}) async {
+    _accountingListSubject.sink.add(await _refresh(
+        latestDate: latestDate ?? DateTime.now(),
+        limit: limit ?? _currentPage * _sizePerPage));
   }
 
   Future<Null> delete(int id) async {
