@@ -66,7 +66,7 @@ class AccountingDBProvider {
 
   Future<BuiltList<TotalExpensesOfMonth>> getMonthTotalAmount(
       [DateTime latestMonth]) async {
-    var dateTime = latestMonth == null ? DateTime.now() : latestMonth;
+    var dateTime = latestMonth ?? DateTime.now();
     var yearMonthList = List<String>();
     for (var i = 0; i <= 6; i++) {
       var d = DateTime(dateTime.year, dateTime.month - i, 1);
@@ -80,10 +80,8 @@ class AccountingDBProvider {
   }
 
   Future<BuiltList<TotalExpensesOfGroupingTag>> getGroupingTagOfLatestMonth(
-      [DateTime latestMonth]) async {
-    var dateTime = latestMonth == null ? DateTime.now() : latestMonth;
-
-    return getGroupingMonthTotalAmount(dateTime);
+      DateTime latestMonth) async {
+    return getGroupingMonthTotalAmount(latestMonth);
   }
 
   Future<BuiltList<TotalExpensesOfGroupingTag>> getGroupingMonthTotalAmount(

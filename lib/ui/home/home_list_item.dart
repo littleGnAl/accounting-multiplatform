@@ -2,27 +2,35 @@ import 'dart:core' as prefix0;
 import 'dart:core';
 
 import 'package:accountingmultiplatform/data/accounting.dart';
+import 'package:built_value/built_value.dart';
+
+part 'home_list_item.g.dart';
 
 abstract class HomeListViewItem {}
 
-class HomeListViewHeader implements HomeListViewItem {
-  final String displayDate;
-  final String displayTotal;
+abstract class HomeListViewHeader
+    implements
+        Built<HomeListViewHeader, HomeListViewHeaderBuilder>,
+        HomeListViewItem {
+  String get displayDate;
+  String get displayTotal;
 
-  const HomeListViewHeader({this.displayDate, this.displayTotal});
+  HomeListViewHeader._();
+  factory HomeListViewHeader([update(HomeListViewHeaderBuilder b)]) =
+      _$HomeListViewHeader;
 }
 
-class HomeListViewContent implements HomeListViewItem {
-  final Accounting accounting;
-  final String displayTime;
-  final String displayLabel;
-  final String displayRemark;
-  final String displayExpense;
+abstract class HomeListViewContent
+    implements
+        Built<HomeListViewContent, HomeListViewContentBuilder>,
+        HomeListViewItem {
+  Accounting get accounting;
+  String get displayTime;
+  String get displayLabel;
+  String get displayRemark;
+  String get displayExpense;
 
-  const HomeListViewContent(
-      {this.accounting,
-      this.displayTime,
-      this.displayLabel,
-      this.displayRemark,
-      this.displayExpense});
+  HomeListViewContent._();
+  factory HomeListViewContent([update(HomeListViewContentBuilder b)]) =
+      _$HomeListViewContent;
 }

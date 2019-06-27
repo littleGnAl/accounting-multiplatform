@@ -12,6 +12,10 @@ import 'package:intl/intl.dart';
 import 'package:rxdart/rxdart.dart';
 
 class SummaryBloc {
+  SummaryBloc(this._db);
+
+  final AccountingDBProvider _db;
+
   final _summaryChartDataSubject =
       BehaviorSubject<SummaryChartData>.seeded(SummaryChartData((b) => b
         ..months = ListBuilder(BuiltList<SummaryChartDataMonth>())
@@ -40,28 +44,18 @@ class SummaryBloc {
     getMonthTotalAmount();
   }
 
-  Future<Null> getGroupingTagOfLatestMonth() async {
-    final db = AccountingDBProvider.db;
-    var list = await db.getGroupingTagOfLatestMonth();
+  Future<Null> getGroupingTagOfLatestMonth({DateTime dateTime}) async {
+    var list =
+        await _db.getGroupingTagOfLatestMonth(dateTime ?? DateTime.now());
     _summaryListSubject.sink.add(_createSummaryList(list));
   }
 
-  Future<Null> getMonthTotalAmount() async {
-    final db = AccountingDBProvider.db;
-    var result = await db.getMonthTotalAmount();
+  Future<Null> getMonthTotalAmount({DateTime dateTime}) async {
+    var now = dateTime ?? DateTime.now();
+
     List<SummaryChartDataMonth> months = List();
     List<SummaryChartDataPoint> points = List();
     List<String> values = List();
-
-    var now = DateTime.now();
-//    var yearMonthList = List<String>();
-//    for (var i = 5; i >= 0; i--) {
-//      var d = DateTime(now.year, now.month - 5, 1);
-//      yearMonthList.add("${d.year}-${d.month}");
-//    }
-
-
-
 
     var today = DateTime(now.year, now.month - 5, 1);
     var firstMonth =
@@ -77,6 +71,7 @@ class SummaryBloc {
     }
 
     var selectedIndex = -1;
+    var result = await _db.getMonthTotalAmount(dateTime);
 
     if (result.isNotEmpty) {
       var reverseList = result.reversed;
@@ -110,8 +105,7 @@ class SummaryBloc {
 
   Future<Null> switchMonth(int index, DateTime date) async {
     print("Switch month to $date");
-    final db = AccountingDBProvider.db;
-    var result = await db.getGroupingMonthTotalAmount(date);
+    var result = await _db.getGroupingMonthTotalAmount(date);
 
     var old = _summaryChartDataSubject.value;
     _summaryChartDataSubject.sink

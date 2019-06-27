@@ -5,9 +5,11 @@ import 'package:accountingmultiplatform/data/accounting_db_provider.dart';
 import 'package:intl/intl.dart';
 import 'package:rxdart/rxdart.dart';
 
-// https://github.com/shiang/flutter-form-with-validation-BLOC/blob/master/lib/src/blocs/bloc.dart
+// Refer https://github.com/shiang/flutter-form-with-validation-BLOC/blob/master/lib/src/blocs/bloc.dart
 class AddEditBloc {
-  final _db = AccountingDBProvider.db;
+  AddEditBloc(this._db);
+
+  final AccountingDBProvider _db;
 
   static final DateTime _initialDateTime = DateTime.now();
 
