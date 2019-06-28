@@ -3,7 +3,7 @@
 Multiplatform version of [Accounting](https://github.com/littleGnAl/Accounting), using both [Kotlin Multiplatform](https://kotlinlang.org/docs/reference/multiplatform.html) and [Flutter](https://flutter.dev/).
 
 # Build
-* In order for kotlin multiplatform to generate iOS frameworks, you should run `./gradlew :common:build` on the first time.
+* In order for kotlin multiplatform to generate iOS frameworks, you should enter the `android` folder and run `./gradlew :common:build` on the first time.
 * The flutter code mainly use [built_value](https://github.com/google/built_value.dart) for immutable object model, so make sure you have run `flutter packages pub run build_runner build` when you build the project.
 * Run `flutter run`.
 * Have fun.
