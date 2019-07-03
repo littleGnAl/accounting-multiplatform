@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:accountingmultiplatform/data/accounting.dart';
-import 'package:accountingmultiplatform/data/accounting_db_provider.dart';
+import 'package:accountingmultiplatform/data/accounting_repository.dart';
 import 'package:intl/intl.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -9,7 +9,7 @@ import 'package:rxdart/rxdart.dart';
 class AddEditBloc {
   AddEditBloc(this._db);
 
-  final AccountingDBProvider _db;
+  final AccountingRepository _db;
 
   static final DateTime _initialDateTime = DateTime.now();
 

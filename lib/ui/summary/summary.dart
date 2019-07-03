@@ -1,7 +1,7 @@
 import 'package:accountingmultiplatform/blocs/summary/summary_bloc.dart';
 import 'package:accountingmultiplatform/blocs/summary/summary_chart_data.dart';
 import 'package:accountingmultiplatform/blocs/summary/summary_list_item.dart';
-import 'package:accountingmultiplatform/data/accounting_db_provider.dart';
+import 'package:accountingmultiplatform/data/accounting_repository.dart';
 import 'package:accountingmultiplatform/ui/summary/summary_chart.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,7 +15,7 @@ class SummaryPage extends StatefulWidget {
 }
 
 class _SummaryPageState extends State<SummaryPage> {
-  final _summaryBloc = SummaryBloc(AccountingDBProvider.db);
+  final _summaryBloc = SummaryBloc(AccountingRepository.db);
 
   @override
   void initState() {

@@ -10,15 +10,15 @@ import 'package:intl/intl.dart';
 
 import 'accounting.dart';
 
-class AccountingDBProvider {
+class AccountingRepository {
   static const _platform =
       const MethodChannel("com.littlegnal.accountingmultiplatform/sqldelight");
 
-  static final AccountingDBProvider db = AccountingDBProvider._();
+  static final AccountingRepository db = AccountingRepository._();
 
   final DateFormat _yearMonthFormat = DateFormat("yyyy-MM");
 
-  AccountingDBProvider._();
+  AccountingRepository._();
 
   Future<BuiltList<Accounting>> queryPreviousAccounting(
       DateTime lastDate, int limit) async {

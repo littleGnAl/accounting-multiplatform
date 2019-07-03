@@ -1,14 +1,14 @@
 import 'package:accountingmultiplatform/blocs/add_edit_bloc.dart';
 import 'package:accountingmultiplatform/data/accounting.dart';
-import 'package:accountingmultiplatform/data/accounting_db_provider.dart';
+import 'package:accountingmultiplatform/data/accounting_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:rxdart/rxdart.dart';
 
-class MockAccountingDBProvider extends Mock implements AccountingDBProvider {}
+class MockAccountingDBProvider extends Mock implements AccountingRepository {}
 
 void main() {
-  AccountingDBProvider db;
+  AccountingRepository db;
   AddEditBloc addEditBloc;
   setUp(() {
     db = MockAccountingDBProvider();

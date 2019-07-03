@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:core';
 
 import 'package:accountingmultiplatform/blocs/add_edit_bloc.dart';
-import 'package:accountingmultiplatform/data/accounting_db_provider.dart';
+import 'package:accountingmultiplatform/data/accounting_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -15,7 +15,7 @@ class AddEditPage extends StatefulWidget {
 }
 
 class _AddEditPageState extends State<AddEditPage> {
-  final addEditBloc = AddEditBloc(AccountingDBProvider.db);
+  final addEditBloc = AddEditBloc(AccountingRepository.db);
 
   final _expensesTextController = TextEditingController();
   final _remarkTextController = TextEditingController();

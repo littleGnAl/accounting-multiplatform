@@ -1,18 +1,18 @@
 import 'package:accountingmultiplatform/blocs/accounting_bloc.dart';
 import 'package:accountingmultiplatform/data/accounting.dart';
-import 'package:accountingmultiplatform/data/accounting_db_provider.dart';
+import 'package:accountingmultiplatform/data/accounting_repository.dart';
 import 'package:accountingmultiplatform/ui/home/home_list_item.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:rxdart/rxdart.dart';
 
-class MockAccountingDBProvider extends Mock implements AccountingDBProvider {}
+class MockAccountingDBProvider extends Mock implements AccountingRepository {}
 
 void main() {
   var now = DateTime(2019, 6, 22);
 
-  AccountingDBProvider db;
+  AccountingRepository db;
   AccountingBloc accountingBloc;
   setUp(() {
     db = MockAccountingDBProvider();

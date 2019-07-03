@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:core';
 
 import 'package:accountingmultiplatform/data/accounting.dart';
-import 'package:accountingmultiplatform/data/accounting_db_provider.dart';
+import 'package:accountingmultiplatform/data/accounting_repository.dart';
 import 'package:accountingmultiplatform/ui/home/home_list_item.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:intl/intl.dart';
@@ -13,7 +13,7 @@ class AccountingBloc {
 
   static const int _sizePerPage = 20;
 
-  final AccountingDBProvider _db;
+  final AccountingRepository _db;
 
   final _accountingListSubject =
       BehaviorSubject<BuiltList<HomeListViewItem>>.seeded(BuiltList());
