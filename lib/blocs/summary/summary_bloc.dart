@@ -5,7 +5,7 @@ import 'package:accountingmultiplatform/blocs/summary/summary_chart_data.dart';
 import 'package:accountingmultiplatform/blocs/summary/summary_chart_data_month.dart';
 import 'package:accountingmultiplatform/blocs/summary/summary_chart_data_point.dart';
 import 'package:accountingmultiplatform/blocs/summary/summary_list_item.dart';
-import 'package:accountingmultiplatform/data/accounting_db_provider.dart';
+import 'package:accountingmultiplatform/data/accounting_repository.dart';
 import 'package:accountingmultiplatform/data/total_expenses_of_grouping_tag.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:intl/intl.dart';
@@ -14,7 +14,7 @@ import 'package:rxdart/rxdart.dart';
 class SummaryBloc {
   SummaryBloc(this._db);
 
-  final AccountingDBProvider _db;
+  final AccountingRepository _db;
 
   final _summaryChartDataSubject =
       BehaviorSubject<SummaryChartData>.seeded(SummaryChartData((b) => b
