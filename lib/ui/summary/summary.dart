@@ -1,3 +1,4 @@
+import 'package:accountingmultiplatform/blocs/bloc_provider.dart';
 import 'package:accountingmultiplatform/blocs/summary/summary_bloc.dart';
 import 'package:accountingmultiplatform/blocs/summary/summary_chart_data.dart';
 import 'package:accountingmultiplatform/blocs/summary/summary_list_item.dart';
@@ -15,13 +16,13 @@ class SummaryPage extends StatefulWidget {
 }
 
 class _SummaryPageState extends State<SummaryPage> {
-  final _summaryBloc = SummaryBloc(AccountingRepository.db);
+  SummaryBloc _summaryBloc;
 
   @override
-  void initState() {
-    super.initState();
-
+  void didChangeDependencies() {
+    _summaryBloc = SummaryBloc(AccountingRepository.db);
     _summaryBloc.initialize();
+    super.didChangeDependencies();
   }
 
   @override
@@ -41,81 +42,79 @@ class _SummaryPageState extends State<SummaryPage> {
               Navigator.pop(context, false);
             }),
       ),
-      body: Column(
-        children: <Widget>[
-          Divider(
-            height: 1.0,
-          ),
-          Container(
-            color: Colors.white,
-            padding: EdgeInsets.only(bottom: 10),
-            child: StreamBuilder(
-              stream: _summaryBloc.summaryChartData,
-              builder: (BuildContext context,
-                  AsyncSnapshot<SummaryChartData> snapshot) {
-                if (snapshot.hasData) {
-                  return SummaryChart(
-                    summaryChartData: snapshot.data,
-                    onSelectedIndexChanged: (index, date) {
-                      _summaryBloc.switchMonth(index, date);
-                    },
-                  );
-                } else {
-                  return Container(
-                    height: 0,
-                    width: 0,
-                  );
-                }
-              },
+      body: BlocProvider<SummaryBloc>(
+        bloc: _summaryBloc,
+        child: Column(
+          children: <Widget>[
+            Divider(
+              height: 1.0,
             ),
-          ),
-          Expanded(
-            child: StreamBuilder(
-              stream: _summaryBloc.summaryList,
-              builder: (BuildContext context,
-                  AsyncSnapshot<BuiltList<SummaryListItem>> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Container(child: CircularProgressIndicator());
-                }
+            Container(
+              color: Colors.white,
+              padding: EdgeInsets.only(bottom: 10),
+              child: StreamBuilder(
+                stream: _summaryBloc.summaryChartData,
+                builder: (BuildContext context,
+                    AsyncSnapshot<SummaryChartData> snapshot) {
+                  if (snapshot.hasData) {
+                    return SummaryChart(summaryChartData: snapshot.data);
+                  } else {
+                    return Container(
+                      height: 0,
+                      width: 0,
+                    );
+                  }
+                },
+              ),
+            ),
+            Expanded(
+              child: StreamBuilder(
+                stream: _summaryBloc.summaryList,
+                builder: (BuildContext context,
+                    AsyncSnapshot<BuiltList<SummaryListItem>> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Container(child: CircularProgressIndicator());
+                  }
 
-                if (snapshot.hasError) {
-                  return Container();
-                }
+                  if (snapshot.hasError) {
+                    return Container();
+                  }
 
-                return ListView.builder(
-                    itemCount: snapshot.data.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final item = snapshot.data[index];
+                  return ListView.builder(
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        final item = snapshot.data[index];
 
-                      return Column(
-                        children: <Widget>[
-                          Container(
-                            padding: EdgeInsets.all(16.0),
-                            child: Row(
-                              children: <Widget>[
-                                Text(item.tagName),
-                                Expanded(
-                                  child: Align(
-                                    alignment: Alignment.centerRight,
-                                    child: Text(
-                                      item.displayTotal,
-                                      style: TextStyle(color: accentColor),
+                        return Column(
+                          children: <Widget>[
+                            Container(
+                              padding: EdgeInsets.all(16.0),
+                              child: Row(
+                                children: <Widget>[
+                                  Text(item.tagName),
+                                  Expanded(
+                                    child: Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Text(
+                                        item.displayTotal,
+                                        style: TextStyle(color: accentColor),
+                                      ),
                                     ),
-                                  ),
-                                )
-                              ],
+                                  )
+                                ],
+                              ),
                             ),
-                          ),
-                          Divider(
-                            height: 1.0,
-                          )
-                        ],
-                      );
-                    });
-              },
-            ),
-          )
-        ],
+                            Divider(
+                              height: 1.0,
+                            )
+                          ],
+                        );
+                      });
+                },
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

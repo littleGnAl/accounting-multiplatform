@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:core';
 
+import 'package:accountingmultiplatform/blocs/accounting_bloc.dart';
 import 'package:accountingmultiplatform/blocs/add_edit_bloc.dart';
+import 'package:accountingmultiplatform/blocs/bloc_provider.dart';
 import 'package:accountingmultiplatform/data/accounting_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,7 +17,7 @@ class AddEditPage extends StatefulWidget {
 }
 
 class _AddEditPageState extends State<AddEditPage> {
-  final addEditBloc = AddEditBloc(AccountingRepository.db);
+  final _addEditBloc = AddEditBloc(AccountingRepository.db);
 
   final _expensesTextController = TextEditingController();
   final _remarkTextController = TextEditingController();
@@ -34,7 +36,7 @@ class _AddEditPageState extends State<AddEditPage> {
 
   Widget _buildTimeText() {
     return StreamBuilder(
-      stream: addEditBloc.time,
+      stream: _addEditBloc.time,
       builder: (context, snapshot) {
         var text;
         var textColor;
@@ -64,7 +66,7 @@ class _AddEditPageState extends State<AddEditPage> {
         firstDate: firstDate,
         lastDate: lastDate);
     if (picked != null) {
-      addEditBloc.changeTime(picked);
+      _addEditBloc.changeTime(picked);
     }
   }
 
@@ -75,7 +77,7 @@ class _AddEditPageState extends State<AddEditPage> {
     if (accountingId != null && accountingId != 0) {
       title = "Edit";
 
-      addEditBloc.getAccountingById(accountingId);
+      _addEditBloc.getAccountingById(accountingId);
     } else {
       title = "Add";
     }
@@ -97,13 +99,13 @@ class _AddEditPageState extends State<AddEditPage> {
             Container(
               margin: EdgeInsets.only(top: 10.0),
               child: StreamBuilder<String>(
-                stream: addEditBloc.expenses,
+                stream: _addEditBloc.expenses,
                 builder: (context, snapshot) {
                   _expensesTextController.value = _expensesTextController.value
                       .copyWith(text: snapshot.data);
 
                   return TextField(
-                    onChanged: addEditBloc.changeExpenses,
+                    onChanged: _addEditBloc.changeExpenses,
                     controller: _expensesTextController,
                     decoration: InputDecoration(
                       hintText: "Enter your expenses",
@@ -122,8 +124,8 @@ class _AddEditPageState extends State<AddEditPage> {
             ),
             _buildTitle("Labels"),
             Labels(
-                selectedLabel: addEditBloc.label,
-                onCheckedChanged: addEditBloc.changeLabel),
+                selectedLabel: _addEditBloc.label,
+                onCheckedChanged: _addEditBloc.changeLabel),
             Container(
               margin: EdgeInsets.only(top: 10.0),
               child: Row(
@@ -149,12 +151,12 @@ class _AddEditPageState extends State<AddEditPage> {
                 height: 200,
                 child: SizedBox.expand(
                   child: StreamBuilder<String>(
-                    stream: addEditBloc.remark,
+                    stream: _addEditBloc.remark,
                     builder: (context, snapshot) {
                       _remarkTextController.value = _remarkTextController.value
                           .copyWith(text: snapshot.data);
                       return TextField(
-                        onChanged: addEditBloc.changeRemark,
+                        onChanged: _addEditBloc.changeRemark,
                         controller: _remarkTextController,
                         maxLines: 8,
                         decoration: InputDecoration(
@@ -177,7 +179,7 @@ class _AddEditPageState extends State<AddEditPage> {
                 height: 50,
                 child: SizedBox.expand(
                   child: StreamBuilder<bool>(
-                    stream: addEditBloc.isSubmitValid,
+                    stream: _addEditBloc.isSubmitValid,
                     builder:
                         (BuildContext context, AsyncSnapshot<bool> snapshot) {
                       final c = snapshot.hasData && snapshot.data
@@ -203,13 +205,15 @@ class _AddEditPageState extends State<AddEditPage> {
   }
 
   _saveAccounting() async {
-    addEditBloc.saveAccounting();
+    _addEditBloc.saveAccounting();
+    var accountingBloc = BlocProvider.of<AccountingBloc>(context);
+    accountingBloc.refreshAccountingList();
     Navigator.pop(context, true);
   }
 
   @override
   void dispose() {
-    addEditBloc.dispose();
+    _addEditBloc.dispose();
     super.dispose();
   }
 }

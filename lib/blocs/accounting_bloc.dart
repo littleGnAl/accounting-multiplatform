@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:core';
 
+import 'package:accountingmultiplatform/blocs/bloc_provider.dart';
 import 'package:accountingmultiplatform/data/accounting.dart';
 import 'package:accountingmultiplatform/data/accounting_repository.dart';
 import 'package:accountingmultiplatform/ui/home/home_list_item.dart';
@@ -8,7 +9,7 @@ import 'package:built_collection/built_collection.dart';
 import 'package:intl/intl.dart';
 import 'package:rxdart/subjects.dart';
 
-class AccountingBloc {
+class AccountingBloc implements BaseBloc {
   AccountingBloc(this._db);
 
   static const int _sizePerPage = 20;
@@ -27,7 +28,8 @@ class AccountingBloc {
   final DateFormat _dateFormat = DateFormat("yyyy-MM-dd");
   final DateFormat _timeFormat = DateFormat("HH:mm");
 
-  dispose() {
+  @override
+  void dispose() {
     _currentPage = 0;
     _accountingListSubject.close();
   }
