@@ -16,7 +16,7 @@ class SqlDelightManager(
   }
 
   override val coroutineContext: CoroutineContext
-    get() = runCoroutineDispatcher + job + exceptionHandler
+    get() = uiCoroutineDispatcher + job + exceptionHandler
 
   fun clear() {
     job.cancel()
@@ -28,9 +28,9 @@ class SqlDelightManager(
         "queryPreviousAccounting" -> {
           val lastDateTimeMilliseconds = arguments["lastDateTimeMilliseconds"] as? Long ?: 0L
           val limit = arguments["limit"] as? Int ?: 0
-          val r = accountingRepository.queryPreviousAccounting(
+          val r = accountingRepository.queryPreviousAccountingAsync(
               lastDateTimeMilliseconds,
-              limit.toLong())
+              limit.toLong()).await()
           result(r)
         }
         "insertAccounting" -> {
@@ -56,23 +56,23 @@ class SqlDelightManager(
         }
         "getAccountingById" -> {
           val id: Int = arguments["id"] as? Int ?: 0
-          val r = accountingRepository.getAccountingById(id.toLong())
+          val r = accountingRepository.getAccountingByIdAsync(id.toLong()).await()
           result(r)
         }
         "totalExpensesOfDay" -> {
           val timeMilliseconds: Int = arguments["timeMilliseconds"] as? Int ?: 0
-          val r = accountingRepository.totalExpensesOfDay(timeMilliseconds.toLong())
+          val r = accountingRepository.totalExpensesOfDayAsync(timeMilliseconds.toLong()).await()
           result(r)
         }
         "getMonthTotalAmount" -> {
           @Suppress("UNCHECKED_CAST") val yearAndMonthList: List<String> =
             arguments["yearAndMonthList"] as? List<String> ?: emptyList()
-          val r = accountingRepository.getMonthTotalAmount(yearAndMonthList)
+          val r = accountingRepository.getMonthTotalAmountAsync(yearAndMonthList).await()
           result(r)
         }
         "getGroupingMonthTotalAmount" -> {
           val yearAndMonth: String = arguments["yearAndMonth"] as? String ?: ""
-          val r = accountingRepository.getGroupingMonthTotalAmount(yearAndMonth)
+          val r = accountingRepository.getGroupingMonthTotalAmountAsync(yearAndMonth).await()
           result(r)
         }
       }

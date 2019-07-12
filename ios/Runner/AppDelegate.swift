@@ -27,9 +27,8 @@ import common
         self?.sqlDelightManager.methodCall(
             method: methodCall.method,
             arguments: args,
-            result: {(r: Any) -> KotlinUnit in
+            result: {(r: Any) -> Void in
                 flutterResult(r)
-                return KotlinUnit()
             })
     })
 
