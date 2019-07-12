@@ -23,7 +23,6 @@ jobs:
       - run:
           name: Building android apk
           command: |
-              flutter clean
               flutter -v build apk
 
 workflows:
