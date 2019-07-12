@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:core';
 
+import 'package:accountingmultiplatform/blocs/bloc_provider.dart';
 import 'package:accountingmultiplatform/blocs/summary/summary_chart_data.dart';
 import 'package:accountingmultiplatform/blocs/summary/summary_chart_data_month.dart';
 import 'package:accountingmultiplatform/blocs/summary/summary_chart_data_point.dart';
@@ -11,7 +12,7 @@ import 'package:built_collection/built_collection.dart';
 import 'package:intl/intl.dart';
 import 'package:rxdart/rxdart.dart';
 
-class SummaryBloc {
+class SummaryBloc implements BaseBloc {
   SummaryBloc(this._db);
 
   final AccountingRepository _db;
@@ -34,7 +35,8 @@ class SummaryBloc {
   final DateFormat _monthFormat = DateFormat("MMM");
   final DateFormat _yearMonthFormat = DateFormat("yyyy-MM");
 
-  dispose() {
+  @override
+  void dispose() {
     _summaryChartDataSubject.close();
     _summaryListSubject.close();
   }

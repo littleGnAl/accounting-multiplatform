@@ -1,3 +1,5 @@
+import 'package:accountingmultiplatform/blocs/bloc_provider.dart';
+import 'package:accountingmultiplatform/blocs/summary/summary_bloc.dart';
 import 'package:accountingmultiplatform/blocs/summary/summary_chart_data.dart';
 import 'package:accountingmultiplatform/ui/summary/summary_chart_painter.dart';
 import 'package:flutter/cupertino.dart';
@@ -6,18 +8,14 @@ import 'package:flutter/widgets.dart';
 class SummaryChart extends StatelessWidget {
   final SummaryChartData _summaryChartData;
 
-  final Function(int, DateTime) _onSelectedIndexChanged;
-
-  const SummaryChart(
-      {Key key,
-      @required SummaryChartData summaryChartData,
-      Function(int, DateTime) onSelectedIndexChanged})
+  const SummaryChart({Key key, @required SummaryChartData summaryChartData})
       : this._summaryChartData = summaryChartData,
-        this._onSelectedIndexChanged = onSelectedIndexChanged,
         super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final summaryBloc = BlocProvider.of<SummaryBloc>(context);
+
     final summaryChartPainter = SummaryChartPainter(_summaryChartData);
 
     return GestureDetector(
@@ -36,7 +34,8 @@ class SummaryChart extends StatelessWidget {
 
         var t = summaryChartPainter.selectMonth(
             box.size.height, itemSpacing, index, x, y);
-        _onSelectedIndexChanged?.call(t.item1, t.item2);
+
+        summaryBloc.switchMonth(t.item1, t.item2);
       },
     );
   }

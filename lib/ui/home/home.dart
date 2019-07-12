@@ -1,5 +1,5 @@
 import 'package:accountingmultiplatform/blocs/accounting_bloc.dart';
-import 'package:accountingmultiplatform/blocs/accounting_bloc_provider.dart';
+import 'package:accountingmultiplatform/blocs/bloc_provider.dart';
 import 'package:accountingmultiplatform/data/accounting.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +20,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void didChangeDependencies() {
-    _accountingBloc = AccountingBlocProvider.of(context);
+    _accountingBloc = BlocProvider.of<AccountingBloc>(context);
     _accountingBloc.refreshAccountingList();
     super.didChangeDependencies();
   }
@@ -157,13 +157,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  _navigateToAddEditPage({int id = 0}) async {
-    final isNeedUpdate =
-        await Navigator.pushNamed(context, "add_edit", arguments: id);
-
-    if (isNeedUpdate != null && isNeedUpdate) {
-      await _accountingBloc.refreshAccountingList();
-    }
+  _navigateToAddEditPage({int id = 0}) {
+    Navigator.pushNamed(context, "add_edit", arguments: id);
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {

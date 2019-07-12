@@ -1,12 +1,13 @@
 import 'dart:async';
 
+import 'package:accountingmultiplatform/blocs/bloc_provider.dart';
 import 'package:accountingmultiplatform/data/accounting.dart';
 import 'package:accountingmultiplatform/data/accounting_repository.dart';
 import 'package:intl/intl.dart';
 import 'package:rxdart/rxdart.dart';
 
 // Refer https://github.com/shiang/flutter-form-with-validation-BLOC/blob/master/lib/src/blocs/bloc.dart
-class AddEditBloc {
+class AddEditBloc implements BaseBloc {
   AddEditBloc(this._db);
 
   final AccountingRepository _db;
@@ -74,7 +75,8 @@ class AddEditBloc {
     await _db.insertAccounting(a);
   }
 
-  dispose() {
+  @override
+  void dispose() {
     _expensesSubject.close();
     _labelSubject.close();
     _timeSubject.close();
