@@ -10,10 +10,6 @@ jobs:
           command: |
               bash .circleci/dartfmt_check.sh
       - run:
-          name: Flutter clean
-          command: |
-              flutter clean
-      - run:
           name: Running build runner
           command: |
             flutter packages get
@@ -26,7 +22,9 @@ jobs:
           command: flutter test
       - run:
           name: Building android apk
-          command: flutter -v build apk
+          command: |
+              flutter clean
+              flutter -v build apk
 
 workflows:
   version: 2
