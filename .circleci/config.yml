@@ -10,6 +10,10 @@ jobs:
           command: |
               bash .circleci/dartfmt_check.sh
       - run:
+          name: Flutter clean
+          command: |
+              flutter clean
+      - run:
           name: Running build runner
           command: |
             flutter packages get
