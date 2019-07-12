@@ -1,9 +1,9 @@
 buildscript {
     ext.versions = [
-        'kotlin': '1.3.31',
-        'coroutines': '1.3.0-M1',
-        'sqldelight': '1.1.3',
-        'serialiaztion': '0.11.0'
+        'kotlin': '1.3.41',
+        'coroutines': '1.3.0-M2',
+        'sqldelight': '1.1.4',
+        'serialiaztion': '0.11.1'
     ]
 
     ext.deps = [
@@ -45,7 +45,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.1'
+        classpath 'com.android.tools.build:gradle:3.4.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
         classpath "org.jetbrains.kotlin:kotlin-serialization:${versions.kotlin}"
         classpath deps.sqldelight.gradleplugin

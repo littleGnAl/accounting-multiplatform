@@ -22,7 +22,8 @@ jobs:
           command: flutter test
       - run:
           name: Building android apk
-          command: flutter -v build apk
+          command: |
+              flutter -v build apk
 
 workflows:
   version: 2
