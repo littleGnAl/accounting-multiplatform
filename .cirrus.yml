@@ -44,6 +44,7 @@ kmpp_common_module_build_task:
   depends_on:
     - flutter_test
   common_module_build_script: 
+    - flutter_doctor
     - cd android
     - ./gradlew :common:build
 
