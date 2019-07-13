@@ -76,4 +76,4 @@ flutter_build_ios_debug_no_codesign_task:
     - cd android
     - ./gradlew :common:build
     - cd ..
-    - flutter build ios --debug --no-codesign --simulator
+    - flutter build ios --no-codesign --simulator
