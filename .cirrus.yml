@@ -8,7 +8,7 @@ build_cache: &build_cache
 
 build_runner_code_cache: &build_runner_code_cache
   build_runner_code_cache:
-    folder: .
+    folder: ./android
 
 container:
   image: cirrusci/flutter:latest
