@@ -38,7 +38,9 @@ flutter_test_task:
 kmpp_common_module_build_task: 
   osx_instance:
     image: mojave-xcode-10.2-flutter
+  <<: *build_cache
   <<: *pub_cache
+  <<: *build_runner_code_cache
   depends_on:
     - flutter_test
   common_module_build_script: 
