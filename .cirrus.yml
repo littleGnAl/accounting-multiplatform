@@ -10,8 +10,8 @@ build_runner_code_cache: &build_runner_code_cache
   build_runner_code_cache:
     folder: /
 
-osx_instance:
-  image: mojave-xcode-10.2-flutter
+container:
+  image: cirrusci/flutter:latest
 
 flutter_doctor_task: 
   <<: *pub_cache
@@ -34,7 +34,7 @@ flutter_test_task:
     - flutter packages pub run build_runner build --delete-conflicting-outputs
     - flutter test
     - cd android
-    - ls
+    - ls  
 
 kmpp_common_module_build_task: 
   <<: *build_cache
@@ -53,6 +53,8 @@ flutter_build_android_apk_task:
   flutter_build_apk_script: flutter -v build apk
 
 flutter_build_ios_debug_no_codesign_task: 
+  osx_instance:
+    image: mojave-xcode-10.2-flutter
   <<: *build_cache
   <<: *pub_cache
   <<: *build_runner_code_cache
