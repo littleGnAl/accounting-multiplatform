@@ -34,6 +34,9 @@ flutter_test_task:
     - cd android
     - ls  
     - cat local.properties
+    - ls
+    - cd build
+    - ls
 
 kmpp_common_module_build_task: 
   osx_instance:
