@@ -39,12 +39,12 @@ kmpp_common_module_build_task:
   osx_instance:
     image: mojave-xcode-10.2-flutter
   <<: *pub_cache
-  <<: *build_cache
-  <<: *build_runner_code_cache
   depends_on:
     - flutter_test
   common_module_build_script: 
     - flutter doctor
+    - flutter packages get
+    - flutter packages pub run build_runner build --delete-conflicting-outputs
     - cd android
     - ./gradlew :common:build
 
