@@ -24,6 +24,7 @@ check_dart_code_style_task:
   dartfmt_script: bash ci/dartfmt_check.sh
     
 flutter_test_task: 
+  <<: *build_cache
   <<: *pub_cache
   <<: *build_runner_code_cache
   depends_on:
