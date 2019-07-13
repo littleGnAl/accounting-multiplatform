@@ -6,6 +6,10 @@ build_cache: &build_cache
   build_cache:
     folder: ./build
 
+build_runner_code_cache: &build_runner_code_cache
+  build_runner_code_cache:
+    folder: ./lib
+
 osx_instance:
   image: mojave-xcode-10.2-flutter
 
@@ -16,21 +20,17 @@ flutter_doctor_task:
 check_dart_code_style_task:
   <<: *pub_cache
   dartfmt_script: bash ci/dartfmt_check.sh
-
-flutter_build_runner_task:
+    
+flutter_test_task: 
   <<: *pub_cache
+  <<: *build_runner_code_cache
   depends_on:
     - flutter_doctor
     - check_dart_code_style
-  build_runner_script: 
+  flutter_test_script: 
     - flutter packages get
     - flutter packages pub run build_runner build --delete-conflicting-outputs
-
-flutter_test_task: 
-  <<: *pub_cache
-  depends_on:
-    - flutter_build_runner
-  flutter_test_script: flutter test
+    - flutter test
 
 kmpp_common_module_build_task: 
   <<: *build_cache
@@ -43,6 +43,7 @@ kmpp_common_module_build_task:
 flutter_build_android_apk_task: 
   <<: *build_cache
   <<: *pub_cache
+  <<: *build_runner_code_cache
   depends_on:
     - kmpp_common_module_build
   flutter_build_apk_script: flutter -v build apk
@@ -50,6 +51,7 @@ flutter_build_android_apk_task:
 flutter_build_ios_debug_no_codesign_task: 
   <<: *build_cache
   <<: *pub_cache
+  <<: *build_runner_code_cache
   depends_on:
     - kmpp_common_module_build
   # https://github.com/flutter/flutter/issues/24078
