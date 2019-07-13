@@ -7,55 +7,48 @@ build_cache: &build_cache
 osx_instance:
   image: mojave-xcode-10.2-flutter
 
-task: 
-  name: Running flutter doctor
+flutter_doctor_task: 
   <<: *pub_cache
   flutter_doctor_script: flutter doctor
 
-task:
-  name: Checking dart code style
+check_dart_code_style_task:
   <<: *pub_cache
   dartfmt_script: bash ci/dartfmt_check.sh
 
-task:
-  name: Running Flutter build runner
+flutter_build_runner_task:
   <<: *pub_cache
   depends_on:
-    - Running flutter doctor
-    - Checking dart code style
+    - flutter_doctor
+    - check_dart_code_style
   build_runner_script: 
     - flutter packages get
     - flutter packages pub run build_runner build --delete-conflicting-outputs
 
-task: 
-  name: Running flutter test
+flutter_test_task: 
   <<: *pub_cache
   depends_on:
-    - Running Flutter build runner
+    - flutter_build_runner
   flutter_test_script: flutter test
 
-  task: 
-  name: Common module build
+kmpp_common_module_build_task: 
   <<: *build_cache
   depends_on:
-    - Running flutter test
+    - flutter_test
   common_module_build_script: 
     - cd android
     - ./gradlew :common:build
 
-task: 
-  name: Building android apk
+flutter_build_android_apk_task: 
   <<: *build_cache
   <<: *pub_cache
   depends_on:
-    - Common module build
+    - kmpp_common_module_build
   flutter_build_apk_script: flutter -v build apk
 
-task: 
-  name: Building ios in debug mode without code sign
+flutter_build_ios_debug_no_codesign_task: 
   <<: *build_cache
   <<: *pub_cache
   depends_on:
-    - Common module build
+    - kmpp_common_module_build
   # https://github.com/flutter/flutter/issues/24078
   flutter_build_ios_debug_script: flutter build ios --debug --no-codesign --simulator
