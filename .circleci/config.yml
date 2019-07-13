@@ -8,7 +8,7 @@ jobs:
       - run:
           name: Checking dart code style
           command: |
-              bash .circleci/dartfmt_check.sh
+              bash ci/dartfmt_check.sh
       - run:
           name: Running build runner
           command: |
