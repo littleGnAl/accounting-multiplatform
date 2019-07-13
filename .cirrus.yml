@@ -44,6 +44,8 @@ kmpp_common_module_build_task:
     - flutter_test
   common_module_build_script: 
     - cd android
+    - ls  
+    - cat local.properties
     - ./gradlew :common:build
 
 flutter_build_android_apk_task: 
