@@ -3,6 +3,10 @@ pub_cache: &pub_cache
     folder: ~/.pub-cache
     fingerprint_script: cat pubspec.lock
 
+build_cache: &build_cache
+  build_cache:
+    folder: ./build
+
 build_runner_code_cache: &build_runner_code_cache
   build_runner_code_cache:
     folder: .
@@ -36,8 +40,7 @@ flutter_test_task:
     - cat local.properties
 
 kmpp_common_module_build_task: 
-  osx_instance:
-      image: mojave-xcode-10.2-flutter
+  <<: *build_cache
   <<: *build_runner_code_cache
   depends_on:
     - flutter_test
@@ -49,6 +52,7 @@ kmpp_common_module_build_task:
     - ./gradlew :common:build
 
 flutter_build_android_apk_task: 
+  <<: *build_cache
   <<: *pub_cache
   <<: *build_runner_code_cache
   depends_on:
@@ -58,6 +62,7 @@ flutter_build_android_apk_task:
 flutter_build_ios_debug_no_codesign_task: 
   osx_instance:
     image: mojave-xcode-10.2-flutter
+  <<: *build_cache
   <<: *pub_cache
   <<: *build_runner_code_cache
   depends_on:
