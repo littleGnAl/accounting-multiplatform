@@ -73,8 +73,5 @@ flutter_build_ios_debug_no_codesign_task:
   flutter_build_ios_debug_script: 
     - flutter packages get
     - flutter packages pub run build_runner build --delete-conflicting-outputs
-    - cd ios
     - sudo gem install cocoapods
-    - pod install
-    - pod setup
     - flutter build ios --debug --no-codesign --simulator
