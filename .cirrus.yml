@@ -1,8 +1,10 @@
 pub_cache: &pub_cache
+  pub_cache:
     folder: ~/.pub-cache
 
 build_cache: &build_cache
-  folder: ./build
+  build_cache:
+    folder: ./build
 
 osx_instance:
   image: mojave-xcode-10.2-flutter
