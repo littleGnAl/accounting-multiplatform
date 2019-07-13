@@ -39,6 +39,7 @@ flutter_test_task:
 
 kmpp_common_module_build_task: 
   <<: *build_cache
+  <<: *build_runner_code_cache
   depends_on:
     - flutter_test
   common_module_build_script: 
