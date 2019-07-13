@@ -34,9 +34,6 @@ flutter_test_task:
     - cd android
     - ls  
     - cat local.properties
-    - ls
-    - cd build
-    - ls
 
 kmpp_common_module_build_task: 
   osx_instance:
@@ -45,7 +42,10 @@ kmpp_common_module_build_task:
   depends_on:
     - flutter_test
   common_module_build_script: 
-    - echo $CIRRUS_CHANGE_IN_REPO
+    - ls
+    - cd build
+    - ls
+    - cd ..
     - cd android
     - ls  
     - cat local.properties
