@@ -69,4 +69,7 @@ flutter_build_ios_debug_no_codesign_task:
   # https://github.com/flutter/flutter/issues/24078
   flutter_build_ios_debug_script: 
     - pod repo update
+    - cd ios
+    - pod install
+    - cd ..
     - flutter build ios --debug --no-codesign --simulator
