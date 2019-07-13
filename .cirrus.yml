@@ -24,21 +24,16 @@ check_dart_code_style_task:
   dartfmt_script: bash ci/dartfmt_check.sh
     
 flutter_test_task: 
-  <<: *build_cache
   <<: *pub_cache
   <<: *build_runner_code_cache
+  <<: *build_cache
   depends_on:
     - flutter_doctor
     - check_dart_code_style
   flutter_test_script: 
-    - pwd
-    - ls
     - flutter packages get
     - flutter packages pub run build_runner build --delete-conflicting-outputs
     - flutter test
-    - cd android
-    - ls  
-    - cat local.properties
 
 kmpp_common_module_build_task: 
   osx_instance:
@@ -48,10 +43,7 @@ kmpp_common_module_build_task:
   depends_on:
     - flutter_test
   common_module_build_script: 
-    - echo $CIRRUS_CHANGE_IN_REPO
     - cd android
-    - ls  
-    - cat local.properties
     - ./gradlew :common:build
 
 flutter_build_android_apk_task: 
