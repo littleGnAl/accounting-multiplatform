@@ -35,6 +35,7 @@ flutter_test_task:
     - flutter test
     - cd android
     - ls  
+    - cat local.properties
 
 kmpp_common_module_build_task: 
   <<: *build_cache
