@@ -56,7 +56,10 @@ flutter_build_android_apk_task:
   <<: *build_runner_code_cache
   depends_on:
     - kmpp_common_module_build
-  flutter_build_apk_script: flutter -v build apk
+  flutter_build_apk_script: 
+    - flutter packages get
+    - flutter packages pub run build_runner build --delete-conflicting-outputs
+    - flutter -v build apk
 
 flutter_build_ios_debug_no_codesign_task: 
   osx_instance:
@@ -70,5 +73,6 @@ flutter_build_ios_debug_no_codesign_task:
   flutter_build_ios_debug_script: 
     - flutter packages get
     - flutter packages pub run build_runner build --delete-conflicting-outputs
+    - cd ios
     - pod install
     - flutter build ios --debug --no-codesign --simulator
