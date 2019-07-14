@@ -5,7 +5,7 @@ pub_cache: &pub_cache
 
 gen_gradle_cache_key: &gen_gradle_cache_key
   gen_gradle_cache_key_script: 
-    - rm gradle_cache_key.txt
+    - rm -f gradle_cache_key.txt
     - bash ci/gradle_checksum.sh gradle_checksum.txt
     - cat -b gradle_checksum.txt android/gradle/wrapper/gradle-wrapper.properties >> gradle_cache_key.txt
 
