@@ -13,7 +13,7 @@ gradle_cache: &gradle_cache
     folder: ~/.gradle/caches
     fingerprint_script: 
       - ls
-      - cat gradle-{{ checksum "gradle_checksum.txt" }}-{{ checksum "android/gradle/wrapper/gradle-wrapper.properties" }}
+      - cat gradle-{{ checksum "./gradle_checksum.txt" }}-{{ checksum "./android/gradle/wrapper/gradle-wrapper.properties" }}
 
 
 build_cache: &build_cache
