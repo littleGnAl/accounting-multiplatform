@@ -5,7 +5,7 @@ pub_cache: &pub_cache
 
 gen_gradle_cache_key: &gen_gradle_cache_key
   gen_gradle_cache_key_script: 
-    - bash ci/gradle_checksum.sh /tmp/gradle_checksum.txt
+    - bash ci/gradle_checksum.sh tmp/gradle_checksum.txt
     - ls
 
 gradle_cache: &gradle_cache
