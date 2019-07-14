@@ -3,12 +3,14 @@ pub_cache: &pub_cache
     folder: ~/.pub-cache
     fingerprint_script: cat pubspec.lock
 
+gen_gradle_cache_key: &gen_gradle_cache_key
+  gen_gradle_cache_key_script: bash ci/gradle_checksum.sh /tmp/gradle_checksum.txt
+
 gradle_cache: &gradle_cache
   gradle_cache:
     folder: ~/.gradle/caches
     fingerprint_script: 
-      - bash ci/gradle_checksum.sh /tmp/gradle_checksum.txt
-      - cat gradle-{{ checksum "/tmp/gradle_checksum.txt" }}-{{ checksum "android/gradle/wrapper/gradle-wrapper.properties" }}
+      - cat gradle-{{ checksum "${HOME}/tmp/gradle_checksum.txt" }}-{{ checksum "${HOME}/android/gradle/wrapper/gradle-wrapper.properties" }}
 
 
 build_cache: &build_cache
@@ -75,6 +77,7 @@ flutter_build_ios_debug_no_codesign_task:
   <<: *build_cache
   <<: *pub_cache
   <<: *build_runner_code_cache
+  <<: *gen_gradle_cache_key
   <<: *gradle_cache
   # depends_on:
   #   - kmpp_common_module_build
