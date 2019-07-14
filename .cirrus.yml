@@ -15,8 +15,8 @@ gradle_cache: &gradle_cache
   gradle_wrapper_cache:
     folder: ~/.gradle/wrapper
     fingerprint_script: cat android/gradle/wrapper/gradle-wrapper.properties
-  konan_cache:
-    folder: ~/.konan/cache
+  konan_dependencies_cache:
+    folder: ~/.konan/dependencies
     fingerprint_script: echo "konan"; cat gradle_checksum.txt
 
 build_cache: &build_cache
@@ -32,25 +32,25 @@ build_runner_code_cache: &build_runner_code_cache
 container:
   image: cirrusci/flutter:latest
 
-# flutter_doctor_task: 
-#   <<: *pub_cache
-#   flutter_doctor_script: flutter doctor
+flutter_doctor_task: 
+  <<: *pub_cache
+  flutter_doctor_script: flutter doctor
 
-# check_dart_code_style_task:
-#   <<: *pub_cache
-#   dartfmt_script: bash ci/dartfmt_check.sh
+check_dart_code_style_task:
+  <<: *pub_cache
+  dartfmt_script: bash ci/dartfmt_check.sh
     
-# flutter_test_task: 
-#   <<: *pub_cache
-#   <<: *build_runner_code_cache
-#   <<: *build_cache
-#   depends_on:
-#     - flutter_doctor
-#     - check_dart_code_style
-#   flutter_test_script: 
-#     - flutter packages get
-#     - flutter packages pub run build_runner build --delete-conflicting-outputs
-#     - flutter test
+flutter_test_task: 
+  <<: *pub_cache
+  <<: *build_runner_code_cache
+  <<: *build_cache
+  depends_on:
+    - flutter_doctor
+    - check_dart_code_style
+  flutter_test_script: 
+    - flutter packages get
+    - flutter packages pub run build_runner build --delete-conflicting-outputs
+    - flutter test
 
 kmpp_common_module_build_task: 
   osx_instance:
@@ -60,25 +60,26 @@ kmpp_common_module_build_task:
   <<: *build_runner_code_cache
   <<: *gen_gradle_cache_key
   <<: *gradle_cache
-  # depends_on:
-  #   - flutter_test
+  depends_on:
+    - flutter_test
   common_module_build_script: 
-    - flutter doctor
     - flutter packages get
     - flutter packages pub run build_runner build --delete-conflicting-outputs
     - cd android
     - ./gradlew :common:build
 
-# flutter_build_android_apk_task: 
-#   <<: *build_cache
-#   <<: *pub_cache
-#   <<: *build_runner_code_cache
-#   depends_on:
-#     - kmpp_common_module_build
-#   flutter_build_apk_script: 
-#     - flutter packages get
-#     - flutter packages pub run build_runner build --delete-conflicting-outputs
-#     - flutter -v build apk
+flutter_build_android_apk_task: 
+  <<: *build_cache
+  <<: *pub_cache
+  <<: *build_runner_code_cache
+  <<: *gen_gradle_cache_key
+  <<: *gradle_cache
+  depends_on:
+    - kmpp_common_module_build
+  flutter_build_apk_script: 
+    - flutter packages get
+    - flutter packages pub run build_runner build --delete-conflicting-outputs
+    - flutter -v build apk
 
 flutter_build_ios_debug_no_codesign_task: 
   osx_instance:
@@ -90,11 +91,6 @@ flutter_build_ios_debug_no_codesign_task:
   <<: *gradle_cache
   depends_on:
     - kmpp_common_module_build
-  # common_module_build_script:
-  #   - flutter packages get
-  #   - flutter packages pub run build_runner build --delete-conflicting-outputs
-  #   - cd android
-  #   - ./gradlew :common:build
   install_cocoapods_script:
     - sudo gem install cocoapods
     - cd ios
