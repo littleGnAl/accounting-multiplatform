@@ -48,20 +48,20 @@ container:
 #     - flutter packages pub run build_runner build --delete-conflicting-outputs
 #     - flutter test
 
-# kmpp_common_module_build_task: 
-#   osx_instance:
-#     image: mojave-xcode-10.2-flutter
-#   <<: *build_cache
-#   <<: *pub_cache
-#   <<: *build_runner_code_cache
-#   depends_on:
-#     - flutter_test
-#   common_module_build_script: 
-#     - flutter doctor
-#     - flutter packages get
-#     - flutter packages pub run build_runner build --delete-conflicting-outputs
-#     - cd android
-#     - ./gradlew :common:build
+kmpp_common_module_build_task: 
+  osx_instance:
+    image: mojave-xcode-10.2-flutter
+  <<: *build_cache
+  <<: *pub_cache
+  <<: *build_runner_code_cache
+  depends_on:
+    - flutter_test
+  common_module_build_script: 
+    - flutter doctor
+    - flutter packages get
+    - flutter packages pub run build_runner build --delete-conflicting-outputs
+    - cd android
+    - ./gradlew :common:build
 
 # flutter_build_android_apk_task: 
 #   <<: *build_cache
@@ -82,13 +82,13 @@ flutter_build_ios_debug_no_codesign_task:
   <<: *build_runner_code_cache
   <<: *gen_gradle_cache_key
   <<: *gradle_cache
-  # depends_on:
-  #   - kmpp_common_module_build
-  common_module_build_script:
-    - flutter packages get
-    - flutter packages pub run build_runner build --delete-conflicting-outputs
-    - cd android
-    - ./gradlew :common:build
+  depends_on:
+    - kmpp_common_module_build
+  # common_module_build_script:
+  #   - flutter packages get
+  #   - flutter packages pub run build_runner build --delete-conflicting-outputs
+  #   - cd android
+  #   - ./gradlew :common:build
   install_cocoapods_script:
     - sudo gem install cocoapods
     - cd ios
