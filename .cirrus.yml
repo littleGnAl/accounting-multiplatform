@@ -5,20 +5,24 @@ pub_cache: &pub_cache
 
 gen_gradle_cache_key: &gen_gradle_cache_key
   gen_gradle_cache_key_script: 
-    - rm -f gradle_cache_key.txt
     - bash ci/gradle_checksum.sh gradle_checksum.txt
-    - cat -b gradle_checksum.txt android/gradle/wrapper/gradle-wrapper.properties >> gradle_cache_key.txt
 
 gradle_cache: &gradle_cache
   gradle_cache:
     folder: ~/.gradle/caches
     fingerprint_script: 
-      - ls
-      - cat gradle_cache_key.txt
+      - cat gradle_checksum.txt
+  gradle_wrapper_cache:
+    folder: ~/.gradle/wrapper
+    fingerprint_script: cat android/gradle/wrapper/gradle-wrapper.properties
+  konan_cache:
+    folder: ~/.konan/cache
+    fingerprint_script: echo "konan"; cat gradle_checksum.txt
 
 build_cache: &build_cache
   build_cache:
     folder: ./build
+    fingerprint_script: echo ${CIRRUS_BRANCH}-${CIRRUS_CHANGE_IN_REPO}
 
 build_runner_code_cache: &build_runner_code_cache
   build_runner_code_cache:
