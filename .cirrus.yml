@@ -71,6 +71,7 @@ flutter_build_ios_debug_no_codesign_task:
   #   - kmpp_common_module_build
   install_cocoapods_script:
     - sudo gem install cocoapods
+    - pod install
   common_module_build_script:
     - flutter packages get
     - flutter packages pub run build_runner build --delete-conflicting-outputs
@@ -78,4 +79,4 @@ flutter_build_ios_debug_no_codesign_task:
     - ./gradlew :common:build
   # https://github.com/flutter/flutter/issues/24078
   flutter_build_ios_debug_script: 
-    - flutter build ios --no-codesign --simulator
+    - flutter build ios --no-codesign
