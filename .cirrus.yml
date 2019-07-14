@@ -7,6 +7,14 @@ gen_gradle_cache_key: &gen_gradle_cache_key
   gen_gradle_cache_key_script: 
     - bash ci/gradle_checksum.sh gradle_checksum.txt
 
+# https://cirrus-ci.org/examples/#caching
+cleanup_gradle_before_cache: &cleanup_gradle_before_cache
+  cleanup_gradle_before_cache_script:
+    - rm -rf ~/.gradle/caches/$GRADLE_VERSION/
+    - rm -rf ~/.gradle/caches/transforms-1
+    - rm -rf ~/.gradle/caches/journal-1
+    - find ~/.gradle/caches/ -name "*.lock" -type f -delete
+
 gradle_cache: &gradle_cache
   gradle_cache:
     folder: ~/.gradle/caches
@@ -67,6 +75,7 @@ kmpp_common_module_build_task:
     - flutter packages pub run build_runner build --delete-conflicting-outputs
     - cd android
     - ./gradlew :common:build
+  <<: *cleanup_gradle_before_cache
 
 flutter_build_android_apk_task: 
   <<: *build_cache
@@ -80,6 +89,7 @@ flutter_build_android_apk_task:
     - flutter packages get
     - flutter packages pub run build_runner build --delete-conflicting-outputs
     - flutter -v build apk
+  <<: *cleanup_gradle_before_cache
 
 flutter_build_ios_debug_no_codesign_task: 
   osx_instance:
@@ -92,9 +102,12 @@ flutter_build_ios_debug_no_codesign_task:
   depends_on:
     - kmpp_common_module_build
   install_cocoapods_script:
+    - flutter packages get
+    - flutter packages pub run build_runner build --delete-conflicting-outputs
     - sudo gem install cocoapods
     - cd ios
     - pod install 
   # https://github.com/flutter/flutter/issues/24078
   flutter_build_ios_debug_script: 
     - flutter build ios --no-codesign --simulator
+  <<: *cleanup_gradle_before_cache
