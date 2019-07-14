@@ -5,10 +5,7 @@ pub_cache: &pub_cache
 
 gradle_cache: &gradle_cache
   gradle_cache:
-    folder:
-      - ~/.gradle/caches
-      - ~/.gradle/wrapper
-      - ~/.m2
+    folder: ~/.gradle/caches
     fingerprint_script: 
       - bash ci/checksum.sh /tmp/checksum.txt
       - cat gradle-{{ checksum "/tmp/checksum.txt" }}-{{ checksum "android/gradle/wrapper/gradle-wrapper.properties" }}
