@@ -4,13 +4,16 @@ pub_cache: &pub_cache
     fingerprint_script: cat pubspec.lock
 
 gen_gradle_cache_key: &gen_gradle_cache_key
-  gen_gradle_cache_key_script: bash ci/gradle_checksum.sh /tmp/gradle_checksum.txt
+  gen_gradle_cache_key_script: 
+    - bash ci/gradle_checksum.sh ./tmp/gradle_checksum.txt
+    - ls
 
 gradle_cache: &gradle_cache
   gradle_cache:
     folder: ~/.gradle/caches
     fingerprint_script: 
-      - cat gradle-{{ checksum "${HOME}/tmp/gradle_checksum.txt" }}-{{ checksum "${HOME}/android/gradle/wrapper/gradle-wrapper.properties" }}
+      - ls
+      - cat gradle-{{ checksum "./tmp/gradle_checksum.txt" }}-{{ checksum "./android/gradle/wrapper/gradle-wrapper.properties" }}
 
 
 build_cache: &build_cache
