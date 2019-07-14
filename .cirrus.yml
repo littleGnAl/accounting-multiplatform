@@ -6,15 +6,14 @@ pub_cache: &pub_cache
 gen_gradle_cache_key: &gen_gradle_cache_key
   gen_gradle_cache_key_script: 
     - bash ci/gradle_checksum.sh gradle_checksum.txt
-    - ls
+    - cat -b gradle_checksum.txt android/gradle/wrapper/gradle-wrapper.properties >> gradle_cache_key.txt
 
 gradle_cache: &gradle_cache
   gradle_cache:
     folder: ~/.gradle/caches
     fingerprint_script: 
       - ls
-      - echo gradle-{{ checksum "gradle_checksum.txt" }}-{{ checksum "android/gradle/wrapper/gradle-wrapper.properties" }}
-
+      - cat gradle_cache_key.txt
 
 build_cache: &build_cache
   build_cache:
