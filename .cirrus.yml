@@ -54,8 +54,10 @@ kmpp_common_module_build_task:
   <<: *build_cache
   <<: *pub_cache
   <<: *build_runner_code_cache
-  depends_on:
-    - flutter_test
+  <<: *gen_gradle_cache_key
+  <<: *gradle_cache
+  # depends_on:
+  #   - flutter_test
   common_module_build_script: 
     - flutter doctor
     - flutter packages get
