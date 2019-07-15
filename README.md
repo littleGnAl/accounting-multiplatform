@@ -1,5 +1,7 @@
 # accounting-multiplatform
 
+[![Build Status](https://api.cirrus-ci.com/github/littleGnAl/accounting-multiplatform.svg)](https://cirrus-ci.com/github/littleGnAl/accounting-multiplatform)
+
 Multiplatform version of [Accounting](https://github.com/littleGnAl/Accounting), using both [Kotlin Multiplatform](https://kotlinlang.org/docs/reference/multiplatform.html) and [Flutter](https://flutter.dev/).
 
 # Build
