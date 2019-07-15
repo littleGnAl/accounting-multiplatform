@@ -1,3 +1,15 @@
+flutter_container: &flutter_container
+  container:
+    image: cirrusci/flutter:latest
+    cpu: 8
+    memory: 16G
+
+flutter_macos_container: &flutter_macos_container
+  osx_instance:
+    image: mojave-xcode-10.2-flutter
+    cpu: 8
+    memory: 16G
+
 pub_cache: &pub_cache
   pub_cache:
     folder: ~/.pub-cache
@@ -34,11 +46,10 @@ build_cache: &build_cache
 
 build_runner_code_cache: &build_runner_code_cache
   build_runner_code_cache:
-    folder: .
+    folder: ./lib
     fingerprint_script: echo ${CIRRUS_BRANCH}-${CIRRUS_CHANGE_IN_REPO}
 
-container:
-  image: cirrusci/flutter:latest
+<<: *flutter_container
 
 flutter_doctor_task: 
   <<: *pub_cache
@@ -60,10 +71,22 @@ flutter_test_task:
     - flutter packages pub run build_runner build --delete-conflicting-outputs
     - flutter test
 
-kmpp_common_module_build_task: 
-  osx_instance:
-    image: mojave-xcode-10.2-flutter
-  <<: *build_cache
+flutter_build_android_apk_task: 
+  <<: *pub_cache
+  <<: *build_runner_code_cache
+  <<: *gen_gradle_cache_key
+  <<: *gradle_cache
+  depends_on:
+    - flutter_test
+  flutter_build_apk_script: 
+    - flutter packages get
+    - flutter packages pub run build_runner build --delete-conflicting-outputs
+    - flutter -v build apk
+  <<: *cleanup_gradle_before_cache
+
+flutter_build_ios_debug_no_codesign_task: 
+  <<: *flutter_macos_container
+  
   <<: *pub_cache
   <<: *build_runner_code_cache
   <<: *gen_gradle_cache_key
@@ -75,35 +98,7 @@ kmpp_common_module_build_task:
     - flutter packages pub run build_runner build --delete-conflicting-outputs
     - cd android
     - ./gradlew :common:build
-  <<: *cleanup_gradle_before_cache
-
-flutter_build_android_apk_task: 
-  <<: *build_cache
-  <<: *pub_cache
-  <<: *build_runner_code_cache
-  <<: *gen_gradle_cache_key
-  <<: *gradle_cache
-  depends_on:
-    - kmpp_common_module_build
-  flutter_build_apk_script: 
-    - flutter packages get
-    - flutter packages pub run build_runner build --delete-conflicting-outputs
-    - flutter -v build apk
-  <<: *cleanup_gradle_before_cache
-
-flutter_build_ios_debug_no_codesign_task: 
-  osx_instance:
-    image: mojave-xcode-10.2-flutter
-  <<: *build_cache
-  <<: *pub_cache
-  <<: *build_runner_code_cache
-  <<: *gen_gradle_cache_key
-  <<: *gradle_cache
-  depends_on:
-    - kmpp_common_module_build
   install_cocoapods_script:
-    - flutter packages get
-    - flutter packages pub run build_runner build --delete-conflicting-outputs
     - sudo gem install cocoapods
     - cd ios
     - pod install 
