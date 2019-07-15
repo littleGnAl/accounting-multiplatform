@@ -1,0 +1,106 @@
+flutter_container: &flutter_container
+  container:
+    image: cirrusci/flutter:latest
+    cpu: 8
+    memory: 16G
+
+flutter_macos_container: &flutter_macos_container
+  osx_instance:
+    image: mojave-xcode-10.2-flutter
+
+pub_cache: &pub_cache
+  pub_cache:
+    folder: ~/.pub-cache
+    fingerprint_script: cat pubspec.lock
+
+gen_gradle_cache_key: &gen_gradle_cache_key
+  gen_gradle_cache_key_script: 
+    - bash ci/gradle_checksum.sh gradle_checksum.txt
+
+# https://cirrus-ci.org/examples/#caching
+cleanup_gradle_before_cache: &cleanup_gradle_before_cache
+  cleanup_gradle_before_cache_script:
+    # - rm -rf ~/.gradle/caches/$GRADLE_VERSION/
+    - rm -rf ~/.gradle/caches/transforms-1
+    - rm -rf ~/.gradle/caches/journal-1
+    - find ~/.gradle/caches/ -name "*.lock" -type f -delete
+
+gradle_cache: &gradle_cache
+  gradle_cache:
+    folder: ~/.gradle/caches
+    fingerprint_script: 
+      - cat gradle_checksum.txt
+  gradle_wrapper_cache:
+    folder: ~/.gradle/wrapper
+    fingerprint_script: cat android/gradle/wrapper/gradle-wrapper.properties
+  konan_dependencies_cache:
+    folder: ~/.konan/dependencies
+    fingerprint_script: echo "konan"; cat gradle_checksum.txt
+
+build_cache: &build_cache
+  build_cache:
+    folder: ./build
+    fingerprint_script: echo ${CIRRUS_BRANCH}-${CIRRUS_CHANGE_IN_REPO}
+
+build_runner_code_cache: &build_runner_code_cache
+  build_runner_code_cache:
+    folder: ./lib
+    fingerprint_script: echo ${CIRRUS_BRANCH}-${CIRRUS_CHANGE_IN_REPO}
+
+<<: *flutter_container
+
+flutter_doctor_task: 
+  <<: *pub_cache
+  flutter_doctor_script: flutter doctor
+
+check_dart_code_style_task:
+  <<: *pub_cache
+  dartfmt_script: bash ci/dartfmt_check.sh
+    
+flutter_test_task: 
+  <<: *pub_cache
+  <<: *build_runner_code_cache
+  <<: *build_cache
+  depends_on:
+    - flutter_doctor
+    - check_dart_code_style
+  flutter_test_script: 
+    - flutter packages get
+    - flutter packages pub run build_runner build --delete-conflicting-outputs
+    - flutter test
+
+flutter_build_android_apk_task: 
+  <<: *pub_cache
+  <<: *build_runner_code_cache
+  <<: *gen_gradle_cache_key
+  <<: *gradle_cache
+  depends_on:
+    - flutter_test
+  flutter_build_apk_script: 
+    - flutter packages get
+    - flutter packages pub run build_runner build --delete-conflicting-outputs
+    - flutter -v build apk
+  <<: *cleanup_gradle_before_cache
+
+flutter_build_ios_debug_no_codesign_task: 
+  <<: *flutter_macos_container
+
+  <<: *pub_cache
+  <<: *build_runner_code_cache
+  <<: *gen_gradle_cache_key
+  <<: *gradle_cache
+  depends_on:
+    - flutter_test
+  common_module_build_script: 
+    - flutter packages get
+    - flutter packages pub run build_runner build --delete-conflicting-outputs
+    - cd android
+    - ./gradlew :common:build
+  install_cocoapods_script:
+    - sudo gem install cocoapods
+    - cd ios
+    - pod install 
+  # https://github.com/flutter/flutter/issues/24078
+  flutter_build_ios_debug_script: 
+    - flutter build ios --no-codesign --simulator
+  <<: *cleanup_gradle_before_cache
