@@ -59,7 +59,7 @@ flutter_test_task:
   depends_on:
     - flutter_doctor
     - check_dart_code_style
- flutter_test_script:
+  flutter_test_script:
    - flutter packages get
    - flutter packages pub run build_runner build --delete-conflicting-outputs
    - flutter test
@@ -69,33 +69,32 @@ flutter_build_android_apk_task:
   <<: *build_runner_code_cache
   <<: *gen_gradle_cache_key
   <<: *gradle_cache
-    depends_on:
-      - flutter_test
+  depends_on:
+    - flutter_test
   flutter_build_apk_script: 
     - flutter packages get
     - flutter packages pub run build_runner build --delete-conflicting-outputs
     - flutter -v build apk
   <<: *cleanup_gradle_before_cache
 
- flutter_build_ios_debug_no_codesign_task:
-   <<: *flutter_macos_container
-
-   <<: *pub_cache
-   <<: *build_runner_code_cache
-   <<: *gen_gradle_cache_key
-   <<: *gradle_cache
-   depends_on:
-     - flutter_test
-   common_module_build_script:
-     - flutter packages get
-     - flutter packages pub run build_runner build --delete-conflicting-outputs
-     - cd android
-     - ./gradlew :common:build
-   install_cocoapods_script:
-     - sudo gem install cocoapods
-     - cd ios
-     - pod install
-   # https://github.com/flutter/flutter/issues/24078
-   flutter_build_ios_debug_script:
-     - flutter build ios --no-codesign --simulator
-   <<: *cleanup_gradle_before_cache
+flutter_build_ios_debug_no_codesign_task:
+  <<: *flutter_macos_container
+  <<: *pub_cache
+  <<: *build_runner_code_cache
+  <<: *gen_gradle_cache_key
+  <<: *gradle_cache
+  depends_on:
+    - flutter_test
+  common_module_build_script:
+    - flutter packages get
+    - flutter packages pub run build_runner build --delete-conflicting-outputs
+    - cd android
+    - ./gradlew :common:build
+  install_cocoapods_script:
+    - sudo gem install cocoapods
+    - cd ios
+    - pod install
+  # https://github.com/flutter/flutter/issues/24078
+  flutter_build_ios_debug_script:
+    - flutter build ios --no-codesign --simulator
+  <<: *cleanup_gradle_before_cache
