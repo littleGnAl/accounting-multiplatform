@@ -22,6 +22,7 @@ cleanup_gradle_before_cache: &cleanup_gradle_before_cache
   cleanup_gradle_before_cache_script:
     - rm -rf ~/.gradle/caches/5.4.1/
     - rm -rf ~/.gradle/caches/transforms-1
+    - rm -rf ~/.gradle/caches/transforms-2
     - rm -rf ~/.gradle/caches/journal-1
     - find ~/.gradle/caches/ -name "*.lock" -type f -delete
 
