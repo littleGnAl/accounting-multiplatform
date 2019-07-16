@@ -14,16 +14,11 @@ pub_cache: &pub_cache
     fingerprint_script: cat pubspec.lock
 
 gen_gradle_cache_key: &gen_gradle_cache_key
-  gen_gradle_cache_key_script: 
-    - bash ci/gradle_checksum.sh gradle_checksum.txt
+  gen_gradle_cache_key_script: bash ci/gradle_checksum.sh gradle_checksum.txt
 
 # https://cirrus-ci.org/examples/#caching
 cleanup_gradle_before_cache: &cleanup_gradle_before_cache
-  cleanup_gradle_before_cache_script:
-    # - rm -rf ~/.gradle/caches/$GRADLE_VERSION/
-    - rm -rf ~/.gradle/caches/transforms-1
-    - rm -rf ~/.gradle/caches/journal-1
-    - find ~/.gradle/caches/ -name "*.lock" -type f -delete
+  cleanup_gradle_before_cache_script: bash ci/gradle_cache_cleanup.sh
 
 gradle_cache: &gradle_cache
   gradle_cache:
@@ -56,15 +51,15 @@ flutter_doctor_task:
 check_dart_code_style_task:
   <<: *pub_cache
   dartfmt_script: bash ci/dartfmt_check.sh
-    
-flutter_test_task: 
+
+flutter_test_task:
   <<: *pub_cache
   <<: *build_runner_code_cache
   <<: *build_cache
   depends_on:
     - flutter_doctor
     - check_dart_code_style
-  flutter_test_script: 
+  flutter_test_script:
     - flutter packages get
     - flutter packages pub run build_runner build --delete-conflicting-outputs
     - flutter test
@@ -82,16 +77,15 @@ flutter_build_android_apk_task:
     - flutter -v build apk
   <<: *cleanup_gradle_before_cache
 
-flutter_build_ios_debug_no_codesign_task: 
+flutter_build_ios_debug_no_codesign_task:
   <<: *flutter_macos_container
-
   <<: *pub_cache
   <<: *build_runner_code_cache
   <<: *gen_gradle_cache_key
   <<: *gradle_cache
   depends_on:
     - flutter_test
-  common_module_build_script: 
+  common_module_build_script:
     - flutter packages get
     - flutter packages pub run build_runner build --delete-conflicting-outputs
     - cd android
@@ -99,8 +93,8 @@ flutter_build_ios_debug_no_codesign_task:
   install_cocoapods_script:
     - sudo gem install cocoapods
     - cd ios
-    - pod install 
+    - pod install
   # https://github.com/flutter/flutter/issues/24078
-  flutter_build_ios_debug_script: 
+  flutter_build_ios_debug_script:
     - flutter build ios --no-codesign --simulator
   <<: *cleanup_gradle_before_cache

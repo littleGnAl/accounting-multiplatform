@@ -72,3 +72,17 @@ subprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+/**
+ * Get gradle wrapper version and pass it to ci/gradle_cache_cleanup.sh
+ */
+task getGradleWrapperVersion() {
+    doLast {
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file('gradle/wrapper/gradle-wrapper.properties')
+            .newDataInputStream())
+        def distributionUrl = properties.getProperty('distributionUrl')
+        def versionNumMatcher = (distributionUrl =~ /[0-9]\.[0-9]\.?[0-9]?/)
+        println versionNumMatcher[0]
+    }
+}
