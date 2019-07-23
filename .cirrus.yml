@@ -56,6 +56,7 @@ check_kotlin_code_style_task:
   <<: *gen_gradle_cache_key
   <<: *gradle_cache
   ktlint_script:
+    - flutter packages get
     - cd android
     - ./gradlew ktlint
   <<: *cleanup_gradle_before_cache
