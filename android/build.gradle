@@ -7,6 +7,7 @@ buildscript {
     ]
 
     ext.deps = [
+        'ktlint': "com.github.shyiko:ktlint:0.31.0",
         'kotlin': [
             'stdlib': [
                 'stdlib': "org.jetbrains.kotlin:kotlin-stdlib:${versions.kotlin}",
@@ -71,6 +72,16 @@ subprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+subprojects {
+    apply from: "${project.rootDir}/ktlint.gradle"
+
+    afterEvaluate {
+        if (project.tasks.findByName('check')) {
+            check.dependsOn('ktlint')
+        }
+    }
 }
 
 /**
