@@ -13,7 +13,9 @@
 *.iml
 *.ipr
 *.iws
-.idea/
+.idea/*
+!.idea/codeStyles
+!.idea/copyright
 
 # Visual Studio Code related
 .vscode/
@@ -33,6 +35,9 @@
 **/android/captures/
 **/android/local.properties
 **/android/**/GeneratedPluginRegistrant.java
+android/.idea/*
+!android/.idea/codeStyles
+!android/.idea/copyright
 
 # iOS/XCode related
 **/ios/**/*.mode1v3

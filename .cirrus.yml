@@ -52,6 +52,15 @@ check_dart_code_style_task:
   <<: *pub_cache
   dartfmt_script: bash ci/dartfmt_check.sh
 
+check_kotlin_code_style_task:
+  <<: *gen_gradle_cache_key
+  <<: *gradle_cache
+  ktlint_script:
+    - flutter packages get
+    - cd android
+    - ./gradlew ktlint
+  <<: *cleanup_gradle_before_cache
+
 flutter_test_task:
   <<: *pub_cache
   <<: *build_runner_code_cache
@@ -59,6 +68,7 @@ flutter_test_task:
   depends_on:
     - flutter_doctor
     - check_dart_code_style
+    - check_kotlin_code_style
   flutter_test_script:
     - flutter packages get
     - flutter packages pub run build_runner build --delete-conflicting-outputs
