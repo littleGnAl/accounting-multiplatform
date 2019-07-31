@@ -1,0 +1,8 @@
+{
+  "@@last_modified": "2019-07-31T16:22:44.012976",
+  "currencySymbol": "$",
+  "@currencySymbol": {
+    "type": "text",
+    "placeholders": {}
+  }
+}

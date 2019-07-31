@@ -223,7 +223,7 @@ class _AddEditPageState extends State<AddEditPage> {
   _saveAccounting() async {
     _addEditBloc.saveAccounting();
     var accountingBloc = BlocProvider.of<AccountingBloc>(context);
-    accountingBloc.refreshAccountingList();
+//    accountingBloc.refreshAccountingList();
     Navigator.pop(context, true);
   }
 

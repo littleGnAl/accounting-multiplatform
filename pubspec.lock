@@ -167,6 +167,18 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_cupertino_localizations:
+    dependency: "direct main"
+    description:
+      name: flutter_cupertino_localizations
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
+  flutter_localizations:
+    dependency: "direct main"
+    description: flutter
+    source: sdk
+    version: "0.0.0"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -228,6 +240,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.15.8"
+  intl_translation:
+    dependency: "direct main"
+    description:
+      name: intl_translation
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.17.5"
   io:
     dependency: transitive
     description:
@@ -319,6 +338,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.7.0"
+  petitparser:
+    dependency: transitive
+    description:
+      name: petitparser
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.4.0"
   pool:
     dependency: transitive
     description:
@@ -479,4 +505,4 @@ packages:
     source: hosted
     version: "2.1.16"
 sdks:
-  dart: ">=2.3.0 <3.0.0"
+  dart: ">=2.4.0 <3.0.0"

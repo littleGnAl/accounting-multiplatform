@@ -17,6 +17,7 @@
 import 'dart:core';
 import 'dart:ui';
 
+import 'package:accountingmultiplatform/accounting_localizations.dart';
 import 'package:accountingmultiplatform/blocs/bloc_provider.dart';
 import 'package:accountingmultiplatform/themes.dart';
 import 'package:accountingmultiplatform/ui/addedit/add_edit.dart';
@@ -24,6 +25,7 @@ import 'package:accountingmultiplatform/ui/home/home.dart';
 import 'package:accountingmultiplatform/ui/summary/summary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'blocs/accounting_bloc.dart';
 import 'colors.dart';
@@ -64,6 +66,23 @@ class _AccountingApp extends StatelessWidget {
     return BlocProvider<AccountingBloc>(
       bloc: AccountingBloc(AccountingRepository.db),
       child: MaterialApp(
+          localizationsDelegates: [
+            const AccountingLocalizationsDelegate(),
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate
+          ],
+          supportedLocales: [
+            const Locale('en', 'US'),
+            const Locale.fromSubtags(
+                languageCode: 'zh',
+                scriptCode: 'Hans',
+                countryCode: 'CN'),
+            const Locale.fromSubtags(
+                languageCode: 'zh',
+                scriptCode: 'Hant',
+                countryCode: 'HK')
+          ],
           theme: appTheme,
           routes: {
             "add_edit": (context) => AddEditPage(),

@@ -17,11 +17,13 @@
 import 'dart:async';
 import 'dart:core';
 
+import 'package:accountingmultiplatform/accounting_localizations.dart';
 import 'package:accountingmultiplatform/blocs/bloc_provider.dart';
 import 'package:accountingmultiplatform/data/accounting.dart';
 import 'package:accountingmultiplatform/data/accounting_repository.dart';
 import 'package:accountingmultiplatform/ui/home/home_list_item.dart';
 import 'package:built_collection/built_collection.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:rxdart/subjects.dart';
 
@@ -40,9 +42,9 @@ class AccountingBloc implements BaseBloc {
 
   int _currentPage = 1;
 
-  final DateFormat _dayNumFormat = DateFormat("yyyyMMdd");
-  final DateFormat _dateFormat = DateFormat("yyyy-MM-dd");
-  final DateFormat _timeFormat = DateFormat("HH:mm");
+  final DateFormat _dayNumFormat = DateFormat("yyyyMMdd", "en_US");
+  final DateFormat _dateFormat = DateFormat("yyyy-MM-dd", "en_US");
+  final DateFormat _timeFormat = DateFormat("HH:mm", "en_US");
 
   @override
   void dispose() {
@@ -51,6 +53,7 @@ class AccountingBloc implements BaseBloc {
   }
 
   Future<BuiltList<HomeListViewItem>> _getAccountingByPage(
+      BuildContext context,
       {DateTime latestDate, int limit = _sizePerPage}) async {
     var preDayNum = _dayNumFormat.format(latestDate);
 
@@ -75,7 +78,7 @@ class AccountingBloc implements BaseBloc {
         ..displayTime = _timeFormat.format(item.createTime)
         ..displayLabel = item.tagName
         ..displayRemark = item.remarks
-        ..displayExpense = "¥${item.amount}"));
+        ..displayExpense = "${AccountingLocalizations.of(context)}${item.amount}"));
     }
 
     return BuiltList.of(newList);
@@ -93,7 +96,7 @@ class AccountingBloc implements BaseBloc {
       ..displayTotal = sumString);
   }
 
-  Future<Null> loadNextPage({int limit}) async {
+  Future<Null> loadNextPage(BuildContext context, {int limit}) async {
     var l = limit == 0 ? _sizePerPage : limit;
     var preList = _accountingListSubject.value;
     var lastItem = preList.last;
@@ -102,7 +105,7 @@ class AccountingBloc implements BaseBloc {
       ++_currentPage;
 
       var nextPageList =
-          await _getAccountingByPage(latestDate: last.createTime, limit: l);
+          await _getAccountingByPage(context, latestDate: last.createTime, limit: l);
 
       var newList = preList.toList();
 
@@ -122,9 +125,10 @@ class AccountingBloc implements BaseBloc {
   }
 
   Future<BuiltList<HomeListViewItem>> _refresh(
+      BuildContext context,
       {DateTime latestDate, int limit = _sizePerPage}) async {
     var refreshList =
-        await _getAccountingByPage(latestDate: latestDate, limit: limit);
+        await _getAccountingByPage(context, latestDate: latestDate, limit: limit);
     print("Refreshing list with: $refreshList");
 
     if (refreshList == null || refreshList.isEmpty) return BuiltList();
@@ -139,15 +143,16 @@ class AccountingBloc implements BaseBloc {
     return BuiltList.of(newList);
   }
 
-  Future<Null> refreshAccountingList({DateTime latestDate, int limit}) async {
+  Future<Null> refreshAccountingList(BuildContext context, {DateTime latestDate, int limit}) async {
     _accountingListSubject.sink.add(await _refresh(
+        context,
         latestDate: latestDate ?? DateTime.now(),
         limit: limit ?? _currentPage * _sizePerPage));
   }
 
-  Future<Null> delete(int id) async {
+  Future<Null> delete(BuildContext context, int id) async {
     print("Deleting item with id: $id");
     await _db.deleteAccountingById(id);
-    refreshAccountingList();
+    refreshAccountingList(context);
   }
 }

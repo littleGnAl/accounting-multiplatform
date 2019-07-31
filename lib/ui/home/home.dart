@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void didChangeDependencies() {
     _accountingBloc = BlocProvider.of<AccountingBloc>(context);
-    _accountingBloc.refreshAccountingList();
+    _accountingBloc.refreshAccountingList(context);
     super.didChangeDependencies();
   }
 
@@ -63,7 +63,9 @@ class _HomePageState extends State<HomePage> {
               return Center(child: CircularProgressIndicator());
             } else if (snapshot.hasData) {
               return NotificationListener<ScrollNotification>(
-                onNotification: _handleScrollNotification,
+                onNotification: (s) {
+                  return _handleScrollNotification(context, s);
+                },
                 child: ListView.builder(
                     controller: _scrollController,
                     itemCount: snapshot.data.length,
@@ -76,7 +78,7 @@ class _HomePageState extends State<HomePage> {
                         return Column(
                           children: <Widget>[
                             GestureDetector(
-                              child: _createListContentItem(s),
+                              child: _createListContentItem(context, s),
                               onTap: () {
                                 _navigateToAddEditPage(id: a.id);
                               },
@@ -87,6 +89,8 @@ class _HomePageState extends State<HomePage> {
                           ],
                         );
                       }
+
+                      return null;
                     }),
               );
             } else if (snapshot.hasError) {
@@ -123,7 +127,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _createListContentItem(HomeListViewContent c) {
+  Widget _createListContentItem(BuildContext context, HomeListViewContent c) {
     return Dismissible(
       key: ObjectKey(c),
       direction: DismissDirection.endToStart,
@@ -168,7 +172,7 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
       onDismissed: (direction) {
-        _accountingBloc.delete(c.accounting.id);
+        _accountingBloc.delete(context, c.accounting.id);
       },
     );
   }
@@ -177,10 +181,10 @@ class _HomePageState extends State<HomePage> {
     Navigator.pushNamed(context, "add_edit", arguments: id);
   }
 
-  bool _handleScrollNotification(ScrollNotification notification) {
+  bool _handleScrollNotification(BuildContext context, ScrollNotification notification) {
     if (notification is ScrollEndNotification) {
       if (_scrollController.position.extentAfter == 0) {
-        _accountingBloc.loadNextPage();
+        _accountingBloc.loadNextPage(context);
       }
     }
     return false;
