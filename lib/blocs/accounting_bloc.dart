@@ -42,9 +42,9 @@ class AccountingBloc implements BaseBloc {
 
   int _currentPage = 1;
 
-  final DateFormat _dayNumFormat = DateFormat("yyyyMMdd", "en_US");
-  final DateFormat _dateFormat = DateFormat("yyyy-MM-dd", "en_US");
-  final DateFormat _timeFormat = DateFormat("HH:mm", "en_US");
+  DateFormat _dayNumFormat;
+  DateFormat _dateFormat;
+  DateFormat _timeFormat;
 
   @override
   void dispose() {
@@ -55,6 +55,9 @@ class AccountingBloc implements BaseBloc {
   Future<BuiltList<HomeListViewItem>> _getAccountingByPage(
       BuildContext context,
       {DateTime latestDate, int limit = _sizePerPage}) async {
+    _dayNumFormat = DateFormat("yyyyMMdd");
+    _timeFormat = DateFormat("HH:mm");
+
     var preDayNum = _dayNumFormat.format(latestDate);
 
     var list = await _db.queryPreviousAccounting(latestDate, limit);
@@ -78,13 +81,14 @@ class AccountingBloc implements BaseBloc {
         ..displayTime = _timeFormat.format(item.createTime)
         ..displayLabel = item.tagName
         ..displayRemark = item.remarks
-        ..displayExpense = "${AccountingLocalizations.of(context)}${item.amount}"));
+        ..displayExpense = "${AccountingLocalizations.of(context).currencySymbol}${item.amount}"));
     }
 
     return BuiltList.of(newList);
   }
 
   Future<HomeListViewHeader> _createHeader(DateTime date) async {
+    _dateFormat = DateFormat("yyyy-MM-dd");
     var dateTitle = _dateFormat.format(date);
     var tempDateTime = DateTime(date.year, date.month, date.day);
 

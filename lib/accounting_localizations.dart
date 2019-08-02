@@ -40,11 +40,21 @@ class AccountingLocalizations {
     debugPrint("name: $name");
     final String localeName = Intl.canonicalizedLocale(name);
     debugPrint("localeName: $localeName");
-    return initializeMessages(localeName).then((_) {
+    return initializeMessages(localeName).then((_) async {
       Intl.defaultLocale = localeName;
       print("initializeMessages default locale: ${Intl.defaultLocale}");
 //      initializeDateFormatting(localeName, null);
+//      return initializeDateFormatting(localeName).then((_) {
+//        return AccountingLocalizations();
+//      });
+
+      await initializeDateFormatting(localeName);
+
       return AccountingLocalizations();
+
+
+
+
     });
   }
 
@@ -63,8 +73,11 @@ class AccountingLocalizationsDelegate extends LocalizationsDelegate<AccountingLo
   bool isSupported(Locale locale) => ['en', 'zh'].contains(locale.languageCode);
 
   @override
-  Future<AccountingLocalizations> load(Locale locale) =>
-      AccountingLocalizations.load(locale);
+  Future<AccountingLocalizations> load(Locale locale) async {
+
+    return AccountingLocalizations.load(locale);
+  }
+
 
   @override
   bool shouldReload(LocalizationsDelegate<AccountingLocalizations> old) {

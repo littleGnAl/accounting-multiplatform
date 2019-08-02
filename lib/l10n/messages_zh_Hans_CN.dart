@@ -1,5 +1,5 @@
 // DO NOT EDIT. This is code generated via package:intl/generate_localized.dart
-// This is a library that provides messages for a zh_HK locale. All the
+// This is a library that provides messages for a zh_Hans_CN locale. All the
 // messages from the main program should be duplicated here with the same
 // function name.
 
@@ -18,10 +18,10 @@ final _keepAnalysisHappy = Intl.defaultLocale;
 typedef MessageIfAbsent(String message_str, List args);
 
 class MessageLookup extends MessageLookupByLibrary {
-  get localeName => 'zh_HK';
+  get localeName => 'zh_Hans_CN';
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
-    "currencySymbol" : MessageLookupByLibrary.simpleMessage("HK\$")
+    "currencySymbol" : MessageLookupByLibrary.simpleMessage("¥")
   };
 }

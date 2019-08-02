@@ -15,6 +15,8 @@
  */
 
 import 'package:flutter/widgets.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 
 Type _typeOf<T>() => T;
 
@@ -41,6 +43,12 @@ class BlocProvider<T extends BaseBloc> extends StatefulWidget {
 }
 
 class _BlocProviderState<T extends BaseBloc> extends State<BlocProvider<T>> {
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   void dispose() {
     widget.bloc?.dispose();

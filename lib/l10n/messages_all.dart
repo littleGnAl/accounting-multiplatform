@@ -11,8 +11,8 @@ import 'package:intl/src/intl_helpers.dart';
 
 import 'messages_en.dart' as messages_en;
 import 'messages_messages.dart' as messages_messages;
-import 'messages_zh_CN.dart' as messages_zh_cn;
-import 'messages_zh_HK.dart' as messages_zh_hk;
+import 'messages_zh_Hans_CN.dart' as messages_zh_hans_cn;
+import 'messages_zh_Hant_HK.dart' as messages_zh_hant_hk;
 
 typedef Future<dynamic> LibraryLoader();
 Map<String, LibraryLoader> _deferredLibraries = {
@@ -21,9 +21,9 @@ Map<String, LibraryLoader> _deferredLibraries = {
 // ignore: unnecessary_new
   'messages': () => new Future.value(null),
 // ignore: unnecessary_new
-  'zh_CN': () => new Future.value(null),
+  'zh_Hans_CN': () => new Future.value(null),
 // ignore: unnecessary_new
-  'zh_HK': () => new Future.value(null),
+  'zh_Hant_HK': () => new Future.value(null),
 };
 
 MessageLookupByLibrary _findExact(localeName) {
@@ -32,10 +32,10 @@ MessageLookupByLibrary _findExact(localeName) {
       return messages_en.messages;
     case 'messages':
       return messages_messages.messages;
-    case 'zh_CN':
-      return messages_zh_cn.messages;
-    case 'zh_HK':
-      return messages_zh_hk.messages;
+    case 'zh_Hans_CN':
+      return messages_zh_hans_cn.messages;
+    case 'zh_Hant_HK':
+      return messages_zh_hant_hk.messages;
     default:
       return null;
   }

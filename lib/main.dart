@@ -15,6 +15,7 @@
  */
 
 import 'dart:core';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:accountingmultiplatform/accounting_localizations.dart';
@@ -25,7 +26,9 @@ import 'package:accountingmultiplatform/ui/home/home.dart';
 import 'package:accountingmultiplatform/ui/summary/summary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import 'blocs/accounting_bloc.dart';
 import 'colors.dart';
@@ -61,8 +64,11 @@ class _AccountingApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle.dark.copyWith(statusBarColor: primaryColorDark));
+    if (Platform.isAndroid) {
+      SystemChrome.setSystemUIOverlayStyle(
+          SystemUiOverlayStyle.dark.copyWith(statusBarColor: primaryColorDark));
+    }
+
     return BlocProvider<AccountingBloc>(
       bloc: AccountingBloc(AccountingRepository.db),
       child: MaterialApp(
@@ -73,7 +79,7 @@ class _AccountingApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate
           ],
           supportedLocales: [
-            const Locale('en', 'US'),
+            const Locale('en', ''),
             const Locale.fromSubtags(
                 languageCode: 'zh',
                 scriptCode: 'Hans',

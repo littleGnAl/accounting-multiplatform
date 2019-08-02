@@ -32,7 +32,7 @@ class AccountingRepository {
 
   static final AccountingRepository db = AccountingRepository._();
 
-  final DateFormat _yearMonthFormat = DateFormat("yyyy-MM");
+  DateFormat _yearMonthFormat;
 
   AccountingRepository._();
 
@@ -82,6 +82,7 @@ class AccountingRepository {
 
   Future<BuiltList<TotalExpensesOfMonth>> getMonthTotalAmount(
       [DateTime latestMonth]) async {
+    _yearMonthFormat = DateFormat("yyyy-MM");
     var dateTime = latestMonth ?? DateTime.now();
     var yearMonthList = List<String>();
     for (var i = 0; i <= 6; i++) {
@@ -102,6 +103,7 @@ class AccountingRepository {
 
   Future<BuiltList<TotalExpensesOfGroupingTag>> getGroupingMonthTotalAmount(
       DateTime dateTime) async {
+    _yearMonthFormat = DateFormat("yyyy-MM");
     var arguments = {"yearAndMonth": _yearMonthFormat.format(dateTime)};
     var result =
         await _platform.invokeMethod("getGroupingMonthTotalAmount", arguments);
