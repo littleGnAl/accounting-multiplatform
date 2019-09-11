@@ -18,7 +18,7 @@ import common
 
     let sqlDelightChannel = FlutterMethodChannel(
         name: SqlDelightManagerKt.SQLDELIGHT_CHANNEL,
-        binaryMessenger: controller)
+        binaryMessenger: controller.binaryMessenger)
 
     sqlDelightChannel.setMethodCallHandler({
         [weak self] (methodCall: FlutterMethodCall, flutterResult: @escaping FlutterResult) -> Void in
