@@ -16,6 +16,8 @@
 .idea/*
 !.idea/codeStyles
 !.idea/copyright
+!.idea/misc.xml
+!.idea/runConfigurations.xml
 
 # Visual Studio Code related
 .vscode/
@@ -38,6 +40,8 @@
 android/.idea/*
 !android/.idea/codeStyles
 !android/.idea/copyright
+!android/.idea/misc.xml
+!android/.idea/runConfigurations.xml
 
 # iOS/XCode related
 **/ios/**/*.mode1v3
