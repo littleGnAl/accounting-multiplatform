@@ -6,7 +6,7 @@ flutter_container: &flutter_container
 
 flutter_macos_container: &flutter_macos_container
   osx_instance:
-    image: mojave-xcode-10.3-flutter
+    image: mojave-flutter
 
 pub_cache: &pub_cache
   pub_cache:
