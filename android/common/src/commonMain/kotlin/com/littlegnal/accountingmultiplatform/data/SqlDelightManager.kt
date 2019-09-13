@@ -16,11 +16,11 @@
 
 package com.littlegnal.accountingmultiplatform.data
 
+import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
 const val SQLDELIGHT_CHANNEL = "com.littlegnal.accountingmultiplatform/sqldelight"
 
