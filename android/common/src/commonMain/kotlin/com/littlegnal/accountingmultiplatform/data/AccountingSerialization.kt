@@ -46,4 +46,4 @@ fun GetMonthTotalAmount.toGetMonthTotalAmountSerialization(): GetMonthTotalAmoun
 
 fun GetGroupingMonthTotalAmount.toGetGroupingMonthTotalAmountSerialization():
     GetGroupingMonthTotalAmountSerialization =
-  GetGroupingMonthTotalAmountSerialization(total, tag_name)
+  GetGroupingMonthTotalAmountSerialization(total ?: 0.0, tag_name)

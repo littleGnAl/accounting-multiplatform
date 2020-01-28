@@ -1,6 +1,7 @@
 apply plugin: 'org.jetbrains.kotlin.multiplatform'
 apply plugin: 'com.squareup.sqldelight'
 apply plugin: 'kotlinx-serialization'
+apply plugin: 'org.jetbrains.kotlin.native.cocoapods'
 
 sqldelight {
     AccountingDB {
@@ -8,7 +9,15 @@ sqldelight {
     }
 }
 
+// CocoaPods requires the podspec to have a version.
+version = "1.0.0"
+
 kotlin {
+    cocoapods {
+        summary = "Common for Accounting."
+        homepage = "https://github.com/littleGnAl/accounting-multiplatform/tree/master/android/common"
+    }
+
     sourceSets {
         commonMain.dependencies {
             implementation deps.kotlin.stdlib.stdlib
@@ -25,7 +34,7 @@ kotlin {
 
         iosMain.dependencies {
             implementation deps.kotlin.stdlib.stdlib
-            implementation deps.sqldelight.driver.ios
+            implementation deps.sqldelight.driver.native
             implementation deps.kotlin.serialiaztion.runtime.native
             implementation deps.kotlin.coroutines.native
         }
@@ -47,23 +56,3 @@ kotlin {
 configurations {
     compileClasspath
 }
-
-task packForXCode(type: Sync) {
-    final File frameworkDir = new File(buildDir, "xcode-frameworks")
-    final String mode = project.findProperty("XCODE_CONFIGURATION")?.toUpperCase() ?: 'DEBUG'
-    final def framework = kotlin.targets.ios.binaries.getFramework("common", mode)
-
-    inputs.property "mode", mode
-    dependsOn framework.linkTask
-
-    from { framework.outputFile.parentFile }
-    into frameworkDir
-
-    doLast {
-        new File(frameworkDir, 'gradlew').with {
-            text = "#!/bin/bash\nexport 'JAVA_HOME=${System.getProperty("java.home")}'\ncd '${rootProject.rootDir}'\n./gradlew \$@\n"
-            setExecutable(true)
-        }
-    }
-}
-tasks.build.dependsOn packForXCode

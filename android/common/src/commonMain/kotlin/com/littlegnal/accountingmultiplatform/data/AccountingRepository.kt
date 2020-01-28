@@ -85,6 +85,7 @@ class AccountingRepository(private val accountingDB: AccountingDB) {
         accountingDB.accountingDBQueries
             .totalExpensesOfDay(timeMilliseconds, timeMilliseconds)
             .executeAsOne()
+            .total ?: 0.0
       }
     }
 
