@@ -17,7 +17,7 @@
 package com.littlegnal.accountingmultiplatform.data
 import com.littlegnal.accountingmultiplatform.AccountingDB
 import com.squareup.sqldelight.db.SqlDriver
-import com.squareup.sqldelight.drivers.ios.NativeSqliteDriver
+import com.squareup.sqldelight.drivers.native.NativeSqliteDriver
 import kotlin.native.concurrent.AtomicReference
 import kotlin.native.concurrent.freeze
 

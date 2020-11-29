@@ -21,16 +21,13 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
-import kotlinx.serialization.list
 
 class AccountingRepository(private val accountingDB: AccountingDB) {
 
-  private val json: Json by lazy {
-    Json(JsonConfiguration.Stable)
-  }
-
+  @ExperimentalSerializationApi
   suspend fun queryPreviousAccountingAsync(
     lastDateTimeMilliseconds: Long,
     limit: Long
@@ -39,11 +36,8 @@ class AccountingRepository(private val accountingDB: AccountingDB) {
         val list = accountingDB.accountingDBQueries
             .queryPreviousAccounting(lastDateTimeMilliseconds, limit)
             .executeAsList()
-            .map {
-              it.toAccountingSerialization()
-            }
 
-        json.stringify(AccountingSerialization.serializer().list, list)
+        Json.encodeToString(ListSerializer(AccountingSerialization), list)
       }
     }
 
@@ -70,12 +64,12 @@ class AccountingRepository(private val accountingDB: AccountingDB) {
     }
   }
 
+  @ExperimentalSerializationApi
   suspend fun getAccountingByIdAsync(id: Long): Deferred<String> = coroutineScope {
     async(runCoroutineDispatcher) {
       val r = accountingDB.accountingDBQueries.getAccountingById(id)
           .executeAsOne()
-          .toAccountingSerialization()
-      json.stringify(AccountingSerialization.serializer(), r)
+      Json.encodeToString(AccountingSerialization, r)
     }
   }
 
@@ -85,9 +79,11 @@ class AccountingRepository(private val accountingDB: AccountingDB) {
         accountingDB.accountingDBQueries
             .totalExpensesOfDay(timeMilliseconds, timeMilliseconds)
             .executeAsOne()
+            .total!!
       }
     }
 
+  @ExperimentalSerializationApi
   suspend fun getMonthTotalAmountAsync(
     yearAndMonthList: List<String>
   ): Deferred<String> = coroutineScope {
@@ -104,14 +100,12 @@ class AccountingRepository(private val accountingDB: AccountingDB) {
               }
             }
           }
-          .map {
-            it.toGetMonthTotalAmountSerialization()
-          }
 
-      return@async json.stringify(GetMonthTotalAmountSerialization.serializer().list, list)
+      return@async Json.encodeToString(ListSerializer(GetMonthTotalAmountSerialization), list)
     }
   }
 
+  @ExperimentalSerializationApi
   suspend fun getGroupingMonthTotalAmountAsync(
     yearAndMonth: String
   ): Deferred<String> = coroutineScope {
@@ -119,10 +113,7 @@ class AccountingRepository(private val accountingDB: AccountingDB) {
       val list = accountingDB.accountingDBQueries
           .getGroupingMonthTotalAmount(yearAndMonth)
           .executeAsList()
-          .map {
-            it.toGetGroupingMonthTotalAmountSerialization()
-          }
-      json.stringify(GetGroupingMonthTotalAmountSerialization.serializer().list, list)
+      Json.encodeToString(ListSerializer(GetGroupingMonthTotalAmountSerialization), list)
     }
   }
 }
