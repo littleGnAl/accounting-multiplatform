@@ -6,7 +6,7 @@ flutter_container: &flutter_container
 
 flutter_macos_container: &flutter_macos_container
   osx_instance:
-    image: big-sur-xcode-12.2
+    image: catalina-xcode-12.1
 
 pub_cache: &pub_cache
   pub_cache:
