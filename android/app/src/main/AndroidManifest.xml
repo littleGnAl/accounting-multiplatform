@@ -14,8 +14,6 @@
         android:label="accountingmultiplatform"
         android:icon="@mipmap/ic_launcher">
 
-        <activity android:name="com.facebook.flipper.android.diagnostics.FlipperDiagnosticActivity"
-            android:exported="true"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

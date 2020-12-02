@@ -12,22 +12,22 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation deps.kotlin.stdlib.stdlib
-            implementation deps.kotlin.serialiaztion.runtime.common
-            implementation deps.kotlin.coroutines.common
+            implementation deps.kotlin.serialiaztion
+            implementation deps.kotlin.coroutines.core
         }
 
         androidMain.dependencies {
             implementation deps.kotlin.stdlib.stdlib
             implementation deps.sqldelight.runtimejvm
-            implementation deps.kotlin.serialiaztion.runtime.runtime
+            implementation deps.kotlin.serialiaztion
             implementation deps.kotlin.coroutines.android
         }
 
         iosMain.dependencies {
             implementation deps.kotlin.stdlib.stdlib
-            implementation deps.sqldelight.driver.ios
-            implementation deps.kotlin.serialiaztion.runtime.native
-            implementation deps.kotlin.coroutines.native
+            implementation deps.sqldelight.driver.native
+            implementation deps.kotlin.serialiaztion
+            implementation deps.kotlin.coroutines.core
         }
     }
 

@@ -80,3 +80,4 @@ ios/Flutter/flutter_export_environment.sh
 
 .android
 .ios
+ios/Flutter/.last_build_id
