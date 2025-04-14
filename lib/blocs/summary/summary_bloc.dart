@@ -62,18 +62,18 @@ class SummaryBloc implements BaseBloc {
     getMonthTotalAmount();
   }
 
-  Future<Null> getGroupingTagOfLatestMonth({DateTime dateTime}) async {
+  Future<Null> getGroupingTagOfLatestMonth({DateTime? dateTime}) async {
     var list =
         await _db.getGroupingTagOfLatestMonth(dateTime ?? DateTime.now());
     _summaryListSubject.sink.add(_createSummaryList(list));
   }
 
-  Future<Null> getMonthTotalAmount({DateTime dateTime}) async {
+  Future<Null> getMonthTotalAmount({DateTime? dateTime}) async {
     var now = dateTime ?? DateTime.now();
 
-    List<SummaryChartDataMonth> months = List();
-    List<SummaryChartDataPoint> points = List();
-    List<String> values = List();
+    List<SummaryChartDataMonth> months = <SummaryChartDataMonth>[];
+    List<SummaryChartDataPoint> points = <SummaryChartDataPoint>[];
+    List<String> values = <String>[];
 
     var today = DateTime(now.year, now.month - 5, 1);
     var firstMonth =

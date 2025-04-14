@@ -23,20 +23,22 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:rxdart/rxdart.dart';
 
-class MockAccountingDBProvider extends Mock implements AccountingRepository {}
+import 'mock_accounting_repository.dart';
+
+// class MockAccountingDBProvider extends Mock implements AccountingRepository {}
 
 void main() {
   var now = DateTime(2019, 6, 22);
 
-  AccountingRepository db;
-  AccountingBloc accountingBloc;
+  late AccountingRepository db;
+  late AccountingBloc accountingBloc;
   setUp(() {
-    db = MockAccountingDBProvider();
-    accountingBloc = AccountingBloc(db);
+    db = MockAccountingRepository();
+    accountingBloc = AccountingBloc(db!);
   });
 
   tearDown(() {
-    db = null;
+    // db = null;
     accountingBloc.dispose();
   });
 
@@ -109,7 +111,7 @@ void main() {
 
     await accountingBloc.refreshAccountingList(latestDate: now, limit: 3);
 
-    expect((accountingBloc.accountings as BehaviorSubject).value,
+    expect((accountingBloc.accountings as ValueStream).value,
         BuiltList.of(adapterList));
   });
 
@@ -146,7 +148,7 @@ void main() {
 
     await accountingBloc.loadNextPage(limit: 3);
 
-    expect((accountingBloc.accountings as BehaviorSubject).value, adapterList);
+    expect((accountingBloc.accountings as ValueStream).value, adapterList);
   });
 
   test("loadNextPage with different id", () async {
@@ -193,7 +195,7 @@ void main() {
       ..displayRemark = "ggggg"
       ..displayExpense = "¥40.0"));
 
-    expect((accountingBloc.accountings as BehaviorSubject).value,
+    expect((accountingBloc.accountings as ValueStream).value,
         BuiltList.of(newAdapterList));
   });
 

@@ -16,10 +16,10 @@
 
 package com.littlegnal.accountingmultiplatform
 
+import android.app.Application
 import com.facebook.stetho.Stetho
-import io.flutter.app.FlutterApplication
 
-class App : FlutterApplication() {
+class App : Application() {
 
   override fun onCreate() {
     super.onCreate()

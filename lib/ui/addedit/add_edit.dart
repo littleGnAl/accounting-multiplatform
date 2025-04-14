@@ -76,7 +76,7 @@ class _AddEditPageState extends State<AddEditPage> {
     var now = DateTime.now();
     var firstDate = DateTime(now.year - 1);
     var lastDate = DateTime(now.year + 1);
-    final DateTime picked = await showDatePicker(
+    final DateTime? picked = await showDatePicker(
         context: context,
         initialDate: now,
         firstDate: firstDate,
@@ -88,7 +88,8 @@ class _AddEditPageState extends State<AddEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    final int accountingId = ModalRoute.of(context).settings.arguments;
+    final int? accountingId =
+        ModalRoute.of(context)?.settings.arguments as int?;
     String title;
     if (accountingId != null && accountingId != 0) {
       title = "Edit";
@@ -198,15 +199,16 @@ class _AddEditPageState extends State<AddEditPage> {
                     stream: _addEditBloc.isSubmitValid,
                     builder:
                         (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                      final c = snapshot.hasData && snapshot.data
+                      final c = snapshot.hasData && snapshot.data != null
                           ? accentColor
                           : unableColor;
-                      return RaisedButton(
+
+                      return ElevatedButton(
                         child: Text(
                           "Confirm",
                           style: TextStyle(color: Color(0xffffffff)),
                         ),
-                        color: c,
+                        style: ElevatedButton.styleFrom(backgroundColor: c),
                         onPressed: () {
                           _saveAccounting();
                         },
@@ -221,9 +223,7 @@ class _AddEditPageState extends State<AddEditPage> {
   }
 
   _saveAccounting() async {
-    _addEditBloc.saveAccounting();
-    var accountingBloc = BlocProvider.of<AccountingBloc>(context);
-    accountingBloc.refreshAccountingList();
+    await _addEditBloc.saveAccounting();
     Navigator.pop(context, true);
   }
 

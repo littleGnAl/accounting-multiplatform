@@ -54,8 +54,7 @@ class AddEditBloc implements BaseBloc {
   Stream<String> get remark => _remarkSubject.stream;
 
   Stream<bool> get isSubmitValid =>
-      Observable.combineLatest3(expenses, label, time,
-          (String e, String l, String t) {
+      Rx.combineLatest3(expenses, label, time, (String e, String l, String t) {
         return e.isNotEmpty && l.isNotEmpty && t.isNotEmpty;
       });
 
@@ -80,7 +79,7 @@ class AddEditBloc implements BaseBloc {
     }
   }
 
-  void saveAccounting() async {
+  Future<void> saveAccounting() async {
     Accounting a = Accounting((b) => b
       ..id = _editAccountingId
       ..amount = double.parse(_expensesSubject.value)

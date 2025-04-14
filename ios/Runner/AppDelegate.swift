@@ -1,8 +1,8 @@
 import UIKit
 import Flutter
-import common
+import shared
 
-@UIApplicationMain
+@main
 @objc class AppDelegate: FlutterAppDelegate {
     lazy var sqlDelightManager: SqlDelightManager = {
         Db().defaultDriver()

@@ -57,13 +57,13 @@ class SummaryChartPainter extends CustomPainter {
   final _curvePath = Path();
   final _trianglePath = Path();
 
-  double _max;
-  double _min;
-  BuiltList<SummaryChartDataPoint> _points;
+  double _max = 0.0;
+  double _min = 0.0;
+  BuiltList<SummaryChartDataPoint>? _points;
 
-  BuiltList<SummaryChartDataMonth> _months;
+  BuiltList<SummaryChartDataMonth>? _months;
 
-  BuiltList<String> _values;
+  BuiltList<String>? _values;
 
   int _selectedIndex = -1;
 
@@ -87,7 +87,7 @@ class SummaryChartPainter extends CustomPainter {
     }
   }
 
-  double getItemSpacing(double width) => width / _months.length;
+  double getItemSpacing(double width) => width / _months!.length;
 
   double _getXByIndex(double width, int index) {
     var itemSpacing = getItemSpacing(width);
@@ -109,18 +109,18 @@ class SummaryChartPainter extends CustomPainter {
   }
 
   void _drawCurveLine(Canvas canvas, Size size) {
-    if (_points.isEmpty) return;
+    if (_points!.isEmpty) return;
 
     _curvePath.reset();
     double preX;
     double preY;
     double curX;
     double curY;
-    var firstPoint = _points[0];
+    var firstPoint = _points![0];
     curX = _getXByIndex(size.width, firstPoint.monthIndex);
     curY = _getYByValue(size.height, firstPoint.totalExpenses);
     _curvePath.moveTo(curX, curY);
-    for (var p in _points) {
+    for (var p in _points!) {
       preX = curX;
       preY = curY;
       curX = _getXByIndex(size.width, p.monthIndex);
@@ -133,15 +133,15 @@ class SummaryChartPainter extends CustomPainter {
   }
 
   void _drawDotsAndTips(Canvas canvas, Size size) {
-    if (_points.isEmpty) return;
+    if (_points!.isEmpty) return;
 
     var triangleHeight = 5.0;
     var triangleWidth = 10.0;
     var triangleDotMargin = 6.0;
     var rectRadius = 5.0;
 
-    for (var i = 0; i < _points.length; i++) {
-      var item = _points[i];
+    for (var i = 0; i < _points!.length; i++) {
+      var item = _points![i];
       var valueIndex = item.monthIndex;
       var x = _getXByIndex(size.width, valueIndex);
       var y = _getYByValue(size.height, item.totalExpenses);
@@ -153,7 +153,7 @@ class SummaryChartPainter extends CustomPainter {
       }
 
       if (_values == null) continue;
-      var v = _values[i];
+      var v = _values![i];
 
       if (valueIndex == _selectedIndex) {
         TextPainter tp = _createTextPainter(v, accentColor);
@@ -199,10 +199,10 @@ class SummaryChartPainter extends CustomPainter {
   }
 
   void _drawMonths(Canvas canvas, Size size) {
-    if (_months == null || _months.isEmpty) return;
+    if (_months == null || _months!.isEmpty) return;
 
-    for (var i = 0; i < _months.length; i++) {
-      var item = _months[i];
+    for (var i = 0; i < _months!.length; i++) {
+      var item = _months![i];
       var month = item.displayMonth;
       var tp = _createTextPainter(month, Color(0xff323232));
       tp.layout();
@@ -230,9 +230,9 @@ class SummaryChartPainter extends CustomPainter {
     return true;
   }
 
-  Tuple2<int, DateTime> selectMonth(
+  Tuple2<int, DateTime>? selectMonth(
       double height, double itemSpacing, int index, double x, double y) {
-    var item = _points.firstWhere((e) {
+    var item = _points!.firstWhere((e) {
       return e.monthIndex == index;
     });
 
@@ -240,7 +240,7 @@ class SummaryChartPainter extends CustomPainter {
     if ((x - valueX).abs() <= TOUCH_RADIUS / 2.0 &&
         (y - _getYByValue(height, item.totalExpenses).abs() <=
             TOUCH_RADIUS / 2.0)) {
-      var month = _months[index];
+      var month = _months![index];
       return Tuple2(index, month.monthDateTime);
     }
 

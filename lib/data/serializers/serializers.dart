@@ -38,11 +38,11 @@ final Serializers standardSerializers = (serializers.toBuilder()
       ..addPlugin(StandardJsonPlugin()))
     .build();
 
-T deserialize<T>(dynamic value) => standardSerializers.deserializeWith<T>(
-    standardSerializers.serializerForType(T), value);
+T? deserialize<T>(dynamic value) => standardSerializers.deserializeWith<T>(
+    standardSerializers.serializerForType(T) as Serializer<T>, value);
 
 BuiltList<T> deserializeListOf<T>(dynamic value) =>
     BuiltList.from(value.map((value) => deserialize<T>(value)).toList());
 
-Object serialize<T>(dynamic value) => standardSerializers.serializeWith(
-    standardSerializers.serializerForType(T), value);
+Object? serialize<T>(dynamic value) => standardSerializers.serializeWith(
+    standardSerializers.serializerForType(T) as Serializer<T>, value);

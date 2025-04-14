@@ -21,8 +21,9 @@ import 'colors.dart';
 final ThemeData appTheme = _appTheme();
 
 ThemeData _appTheme() {
+  final ThemeData theme = ThemeData();
   return ThemeData(
-      accentColor: accentColor,
+      colorScheme: theme.colorScheme.copyWith(secondary: accentColor),
       primaryColor: primaryColor,
       primaryColorDark: primaryColorDark);
 }

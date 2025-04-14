@@ -18,26 +18,27 @@ package com.littlegnal.accountingmultiplatform
 
 import android.os.Bundle
 import com.littlegnal.accountingmultiplatform.data.AccountingRepository
-import com.littlegnal.accountingmultiplatform.data.Db
 import com.littlegnal.accountingmultiplatform.data.SQLDELIGHT_CHANNEL
 import com.littlegnal.accountingmultiplatform.data.SqlDelightManager
-import com.littlegnal.accountingmultiplatform.data.getInstance
-import io.flutter.app.FlutterActivity
+import com.littlegnal.accountingmultiplatform.data.getDBInstance
+import io.flutter.embedding.android.FlutterActivity;
+import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
 
 class MainActivity : FlutterActivity() {
 
   private val sqlDelightManager by lazy {
-    val accountingRepository = AccountingRepository(Db.getInstance(applicationContext))
+    val accountingRepository = AccountingRepository(getDBInstance(applicationContext))
     SqlDelightManager(accountingRepository)
   }
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
-    GeneratedPluginRegistrant.registerWith(this)
+  override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+    super.configureFlutterEngine(flutterEngine)
 
-    MethodChannel(flutterView, SQLDELIGHT_CHANNEL).setMethodCallHandler { methodCall, result ->
+    GeneratedPluginRegistrant.registerWith(flutterEngine)
+
+    MethodChannel(flutterEngine.dartExecutor, SQLDELIGHT_CHANNEL).setMethodCallHandler { methodCall, result ->
       @Suppress("UNCHECKED_CAST")
       val args = methodCall.arguments as? Map<String, Any> ?: emptyMap()
       sqlDelightManager.methodCall(methodCall.method, args) {

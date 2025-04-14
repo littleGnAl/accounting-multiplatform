@@ -1,32 +1,14 @@
-def localProperties = new Properties()
-def localPropertiesFile = rootProject.file('local.properties')
-if (localPropertiesFile.exists()) {
-    localPropertiesFile.withReader('UTF-8') { reader ->
-        localProperties.load(reader)
-    }
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
 }
 
-def flutterRoot = localProperties.getProperty('flutter.sdk')
-if (flutterRoot == null) {
-    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
-}
-
-def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
-}
-
-def flutterVersionName = localProperties.getProperty('flutter.versionName')
-if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
-}
-
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 29
+    namespace = "com.littlegnal.accountingmultiplatform"
+
+    compileSdkVersion 35
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -39,9 +21,9 @@ android {
     defaultConfig {
         applicationId "com.littlegnal.accountingmultiplatform"
         minSdkVersion 21
-        targetSdkVersion 29
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
+        targetSdkVersion 35
+        versionCode flutter.versionCode
+        versionName flutter.versionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -55,6 +37,15 @@ android {
     packagingOptions {
         exclude 'META-INF/*.kotlin_module'
     }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11.toString()
+    }
 }
 
 flutter {
@@ -62,15 +53,7 @@ flutter {
 }
 
 dependencies {
-    implementation project(":common")
-    implementation deps.kotlin.stdlib.jdk7
-    testImplementation 'junit:junit:4.12'
-    implementation "androidx.appcompat:appcompat:1.3.0-alpha02"
-
-    implementation deps.sqldelight.driver.android
-
+    // Implementation kmp/shared module
+    implementation "com.littlegnal:shared:1.0.0"
     implementation 'com.facebook.stetho:stetho:1.5.1'
-
-    implementation deps.kotlin.serialiaztion
-    implementation deps.kotlin.coroutines.android
 }

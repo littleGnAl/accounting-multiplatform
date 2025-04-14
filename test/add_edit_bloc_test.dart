@@ -21,18 +21,20 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:rxdart/rxdart.dart';
 
-class MockAccountingDBProvider extends Mock implements AccountingRepository {}
+import 'mock_accounting_repository.dart';
+
+// class MockAccountingDBProvider extends Mock implements AccountingRepository {}
 
 void main() {
-  AccountingRepository db;
-  AddEditBloc addEditBloc;
+  late AccountingRepository db;
+  late AddEditBloc addEditBloc;
   setUp(() {
-    db = MockAccountingDBProvider();
+    db = MockAccountingRepository();
     addEditBloc = AddEditBloc(db);
   });
 
   tearDown(() {
-    db = null;
+    // db = null;
     addEditBloc.dispose();
   });
 
@@ -51,9 +53,9 @@ void main() {
       expect(v, "2019 Jun 22");
     });
 
-    expect((addEditBloc.expenses as BehaviorSubject).value, "10.0");
-    expect((addEditBloc.label as BehaviorSubject).value, "Dinner");
-    expect((addEditBloc.remark as BehaviorSubject).value, "jjjjj");
+    expect((addEditBloc.expenses as ValueStream).value, "10.0");
+    expect((addEditBloc.label as ValueStream).value, "Dinner");
+    expect((addEditBloc.remark as ValueStream).value, "jjjjj");
   });
 
   test("saveAccounting", () async {

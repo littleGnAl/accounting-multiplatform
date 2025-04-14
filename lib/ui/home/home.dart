@@ -30,7 +30,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  AccountingBloc _accountingBloc;
+  late AccountingBloc _accountingBloc;
 
   ScrollController _scrollController = ScrollController();
 
@@ -66,9 +66,9 @@ class _HomePageState extends State<HomePage> {
                 onNotification: _handleScrollNotification,
                 child: ListView.builder(
                     controller: _scrollController,
-                    itemCount: snapshot.data.length,
+                    itemCount: snapshot.data?.length,
                     itemBuilder: (BuildContext context, int index) {
-                      final s = snapshot.data[index];
+                      final s = snapshot.data?[index];
                       if (s is HomeListViewHeader) {
                         return _createListHeaderItem(s);
                       } else if (s is HomeListViewContent) {
@@ -167,14 +167,16 @@ class _HomePageState extends State<HomePage> {
           alignment: Alignment.centerRight,
         ),
       ),
-      onDismissed: (direction) {
-        _accountingBloc.delete(c.accounting.id);
+      onDismissed: (direction) async {
+        await _accountingBloc.delete(c.accounting.id);
+        _accountingBloc.refreshAccountingList();
       },
     );
   }
 
-  _navigateToAddEditPage({int id = 0}) {
-    Navigator.pushNamed(context, "add_edit", arguments: id);
+  _navigateToAddEditPage({int id = 0}) async {
+    await Navigator.pushNamed(context, "add_edit", arguments: id);
+    _accountingBloc.refreshAccountingList();
   }
 
   bool _handleScrollNotification(ScrollNotification notification) {
@@ -191,7 +193,7 @@ class _HomePageState extends State<HomePage> {
       stream: _accountingBloc.accountings,
       builder: (BuildContext context,
           AsyncSnapshot<BuiltList<HomeListViewItem>> snapshot) {
-        var isBtnEnable = snapshot.hasData && snapshot.data.isNotEmpty;
+        var isBtnEnable = snapshot.hasData && snapshot.data?.isNotEmpty == true;
 
         return IconButton(
           disabledColor: unableColor,

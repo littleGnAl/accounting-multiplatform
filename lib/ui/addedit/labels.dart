@@ -21,7 +21,9 @@ import 'package:flutter/widgets.dart';
 
 class Labels extends StatefulWidget {
   const Labels(
-      {Key key, @required this.onCheckedChanged, Stream<String> selectedLabel})
+      {Key? key,
+      required this.onCheckedChanged,
+      required Stream<String> selectedLabel})
       : this._selectedLabel = selectedLabel,
         super(key: key);
 
