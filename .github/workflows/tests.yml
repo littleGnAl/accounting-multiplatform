@@ -56,7 +56,7 @@ jobs:
           cache: true
       - run: flutter packages get -v
       - name: Run flutter build ios --no-codesign
-        run: flutter build ios --no-codesign
+        run: flutter build ios --no-codesign -v
 
   kmp_shared_smoke_build:
     name: Smoke build for kmp/shared module
