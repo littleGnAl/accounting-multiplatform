@@ -30,7 +30,6 @@
 .pub-cache/
 .pub/
 /build/
-*.g.dart
 
 # Android related
 **/android/.gradle
@@ -42,6 +41,9 @@ android/.idea/*
 !android/.idea/copyright
 !android/.idea/misc.xml
 !android/.idea/runConfigurations.xml
+**/android/**/.cxx
+**/android/.kotlin
+**/android/build
 
 # iOS/XCode related
 **/ios/**/*.mode1v3
@@ -60,6 +62,7 @@ android/.idea/*
 **/ios/**/profile
 **/ios/**/xcuserdata
 **/ios/.generated/
+**/ios/Flutter/
 **/ios/Flutter/App.framework
 **/ios/Flutter/Flutter.framework
 **/ios/Flutter/Generated.xcconfig
@@ -68,6 +71,7 @@ android/.idea/*
 **/ios/Flutter/flutter_assets/
 **/ios/ServiceDefinitions.json
 **/ios/Runner/GeneratedPluginRegistrant.*
+**/ios/build
 
 # Exceptions to above rules.
 !**/ios/**/default.mode1v3
@@ -81,3 +85,5 @@ ios/Flutter/flutter_export_environment.sh
 .android
 .ios
 ios/Flutter/.last_build_id
+
+kmp/.kotlin

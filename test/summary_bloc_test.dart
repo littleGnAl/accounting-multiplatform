@@ -27,21 +27,23 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:rxdart/rxdart.dart';
 
-class MockAccountingDBProvider extends Mock implements AccountingRepository {}
+import 'mock_accounting_repository.dart';
+
+// class MockAccountingDBProvider extends Mock implements AccountingRepository {}
 
 void main() {
   var now = DateTime.fromMillisecondsSinceEpoch(1561202892000);
 
-  AccountingRepository db;
-  SummaryBloc summaryBloc;
+  late AccountingRepository db;
+  late SummaryBloc summaryBloc;
 
   setUp(() {
-    db = MockAccountingDBProvider();
+    db = MockAccountingRepository();
     summaryBloc = SummaryBloc(db);
   });
 
   tearDown(() {
-    db = null;
+    // db = null;
     summaryBloc.dispose();
   });
 
@@ -96,7 +98,7 @@ void main() {
 
     await summaryBloc.getMonthTotalAmount(dateTime: now);
 
-    expect((summaryBloc.summaryChartData as BehaviorSubject).value, expected);
+    expect((summaryBloc.summaryChartData as ValueStream).value, expected);
   }
 
   test("getMonthTotalAmount with milliseconds 1561202892000", () async {
@@ -126,7 +128,7 @@ void main() {
 
     await summaryBloc.getGroupingTagOfLatestMonth(dateTime: now);
 
-    expect((summaryBloc.summaryList as BehaviorSubject).value,
+    expect((summaryBloc.summaryList as ValueStream).value,
         BuiltList.of(summaryList));
   }
 
@@ -157,10 +159,10 @@ void main() {
         ..displayTotal = "¥10.0")
     ];
 
-    expect((summaryBloc.summaryList as BehaviorSubject).value,
+    expect((summaryBloc.summaryList as ValueStream).value,
         BuiltList.of(switchSummaryList));
 
-    var index = ((summaryBloc.summaryChartData as BehaviorSubject).value
+    var index = ((summaryBloc.summaryChartData as ValueStream).value
             as SummaryChartData)
         .selectedIndex;
 

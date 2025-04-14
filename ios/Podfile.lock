@@ -1,16 +1,21 @@
 PODS:
   - Flutter (1.0.0)
+  - shared (1.0)
 
 DEPENDENCIES:
-  - Flutter (from `.symlinks/flutter/ios`)
+  - Flutter (from `Flutter`)
+  - shared (from `../kmp/shared`)
 
 EXTERNAL SOURCES:
   Flutter:
-    :path: ".symlinks/flutter/ios"
+    :path: Flutter
+  shared:
+    :path: "../kmp/shared"
 
 SPEC CHECKSUMS:
-  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  shared: f46e69b6fa44f298fd5cfc1d321a26677f01bef7
 
-PODFILE CHECKSUM: ebd43b443038e611b86ede96e613bd6033c49497
+PODFILE CHECKSUM: dcee2176c09a9ce8a6dbd85dc666bbde77d8a1ca
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.16.2

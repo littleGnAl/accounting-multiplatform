@@ -24,7 +24,7 @@ import 'package:flutter/widgets.dart';
 class SummaryChart extends StatelessWidget {
   final SummaryChartData _summaryChartData;
 
-  const SummaryChart({Key key, @required SummaryChartData summaryChartData})
+  const SummaryChart({Key? key, required SummaryChartData summaryChartData})
       : this._summaryChartData = summaryChartData,
         super(key: key);
 
@@ -40,7 +40,8 @@ class SummaryChart extends StatelessWidget {
         size: Size.fromHeight(200.0),
       ),
       onTapUp: (detail) {
-        RenderBox box = context.findRenderObject();
+        RenderBox? box = context.findRenderObject() as RenderBox?;
+        if (box == null) return;
         final offset = box.globalToLocal(detail.globalPosition);
 
         var itemSpacing = summaryChartPainter.getItemSpacing(box.size.width);
@@ -51,7 +52,9 @@ class SummaryChart extends StatelessWidget {
         var t = summaryChartPainter.selectMonth(
             box.size.height, itemSpacing, index, x, y);
 
-        summaryBloc.switchMonth(t.item1, t.item2);
+        if (t != null) {
+          summaryBloc.switchMonth(t.item1, t.item2);
+        }
       },
     );
   }

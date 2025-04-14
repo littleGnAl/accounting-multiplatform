@@ -25,7 +25,7 @@ class DateTimeToTimeMillisecondsSerializer
     if (serialized is int && specifiedType.root == DateTime) {
       return DateTime.fromMillisecondsSinceEpoch(serialized);
     }
-    return serialized;
+    return serialized as DateTime;
   }
 
   @override

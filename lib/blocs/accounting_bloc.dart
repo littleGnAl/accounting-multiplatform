@@ -51,7 +51,7 @@ class AccountingBloc implements BaseBloc {
   }
 
   Future<BuiltList<HomeListViewItem>> _getAccountingByPage(
-      {DateTime latestDate, int limit = _sizePerPage}) async {
+      {required DateTime latestDate, int limit = _sizePerPage}) async {
     var preDayNum = _dayNumFormat.format(latestDate);
 
     var list = await _db.queryPreviousAccounting(latestDate, limit);
@@ -60,7 +60,7 @@ class AccountingBloc implements BaseBloc {
       return BuiltList();
     }
 
-    var newList = List<HomeListViewItem>();
+    var newList = <HomeListViewItem>[];
 
     for (Accounting item in list) {
       var dateNum = _dayNumFormat.format(item.createTime);
@@ -93,7 +93,7 @@ class AccountingBloc implements BaseBloc {
       ..displayTotal = sumString);
   }
 
-  Future<Null> loadNextPage({int limit}) async {
+  Future<Null> loadNextPage({int limit = 0}) async {
     var l = limit == 0 ? _sizePerPage : limit;
     var preList = _accountingListSubject.value;
     var lastItem = preList.last;
@@ -122,10 +122,9 @@ class AccountingBloc implements BaseBloc {
   }
 
   Future<BuiltList<HomeListViewItem>> _refresh(
-      {DateTime latestDate, int limit = _sizePerPage}) async {
+      {required DateTime latestDate, int limit = _sizePerPage}) async {
     var refreshList =
         await _getAccountingByPage(latestDate: latestDate, limit: limit);
-    print("Refreshing list with: $refreshList");
 
     if (refreshList == null || refreshList.isEmpty) return BuiltList();
 
@@ -139,7 +138,7 @@ class AccountingBloc implements BaseBloc {
     return BuiltList.of(newList);
   }
 
-  Future<Null> refreshAccountingList({DateTime latestDate, int limit}) async {
+  Future<Null> refreshAccountingList({DateTime? latestDate, int? limit}) async {
     _accountingListSubject.sink.add(await _refresh(
         latestDate: latestDate ?? DateTime.now(),
         limit: limit ?? _currentPage * _sizePerPage));
@@ -148,6 +147,5 @@ class AccountingBloc implements BaseBloc {
   Future<Null> delete(int id) async {
     print("Deleting item with id: $id");
     await _db.deleteAccountingById(id);
-    refreshAccountingList();
   }
 }

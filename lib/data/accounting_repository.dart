@@ -45,6 +45,8 @@ class AccountingRepository {
     var result =
         await _platform.invokeMethod("queryPreviousAccounting", arguments);
 
+    print('result: $result');
+
     return deserializeListOf<Accounting>(jsonDecode(result));
   }
 
@@ -60,7 +62,7 @@ class AccountingRepository {
     await _platform.invokeMethod("insertAccounting", arguments);
   }
 
-  Future<Null> deleteAccountingById(int id) async {
+  Future<void> deleteAccountingById(int id) async {
     var arguments = {"id": id};
     await _platform.invokeMethod("deleteAccountingById", arguments);
   }
@@ -69,7 +71,7 @@ class AccountingRepository {
     var arguments = {"id": id};
     var result = await _platform.invokeMethod("getAccountingById", arguments);
 
-    return deserialize<Accounting>(jsonDecode(result));
+    return deserialize<Accounting>(jsonDecode(result))!;
   }
 
   Future<double> totalExpensesOfDay(int millisecondsSinceEpoch) async {
@@ -81,9 +83,9 @@ class AccountingRepository {
   }
 
   Future<BuiltList<TotalExpensesOfMonth>> getMonthTotalAmount(
-      [DateTime latestMonth]) async {
+      [DateTime? latestMonth]) async {
     var dateTime = latestMonth ?? DateTime.now();
-    var yearMonthList = List<String>();
+    var yearMonthList = <String>[];
     for (var i = 0; i <= 6; i++) {
       var d = DateTime(dateTime.year, dateTime.month - i, 1);
       yearMonthList.add(_yearMonthFormat.format(d));

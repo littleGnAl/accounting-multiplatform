@@ -32,7 +32,7 @@ class SummaryPage extends StatefulWidget {
 }
 
 class _SummaryPageState extends State<SummaryPage> {
-  SummaryBloc _summaryBloc;
+  late SummaryBloc _summaryBloc;
 
   @override
   void didChangeDependencies() {
@@ -73,7 +73,7 @@ class _SummaryPageState extends State<SummaryPage> {
                 builder: (BuildContext context,
                     AsyncSnapshot<SummaryChartData> snapshot) {
                   if (snapshot.hasData) {
-                    return SummaryChart(summaryChartData: snapshot.data);
+                    return SummaryChart(summaryChartData: snapshot.data!);
                   } else {
                     return Container(
                       height: 0,
@@ -97,9 +97,9 @@ class _SummaryPageState extends State<SummaryPage> {
                   }
 
                   return ListView.builder(
-                      itemCount: snapshot.data.length,
+                      itemCount: snapshot.data?.length,
                       itemBuilder: (BuildContext context, int index) {
-                        final item = snapshot.data[index];
+                        final item = snapshot.data![index];
 
                         return Column(
                           children: <Widget>[

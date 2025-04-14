@@ -35,7 +35,7 @@ void main() => runApp(_AccountingApp(
 class _AccountingApp extends StatelessWidget {
   final String _route;
 
-  const _AccountingApp({Key key, @required String route})
+  const _AccountingApp({Key? key, required String route})
       : this._route = route,
         super(key: key);
 

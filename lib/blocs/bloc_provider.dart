@@ -23,7 +23,7 @@ abstract class BaseBloc {
 }
 
 class BlocProvider<T extends BaseBloc> extends StatefulWidget {
-  BlocProvider({Key key, @required this.child, @required this.bloc})
+  BlocProvider({Key? key, required this.child, required this.bloc})
       : super(key: key);
 
   final Widget child;
@@ -33,10 +33,11 @@ class BlocProvider<T extends BaseBloc> extends StatefulWidget {
   State<StatefulWidget> createState() => _BlocProviderState<T>();
 
   static T of<T extends BaseBloc>(BuildContext context) {
-    final type = _typeOf<_BlocProviderInherited<T>>();
-    _BlocProviderInherited<T> provider =
-        context.ancestorInheritedElementForWidgetOfExactType(type)?.widget;
-    return provider?.bloc;
+    // final type = _typeOf<_BlocProviderInherited<T>>();
+    _BlocProviderInherited<T>? provider = context
+        .getElementForInheritedWidgetOfExactType<_BlocProviderInherited<T>>()
+        ?.widget as _BlocProviderInherited<T>?;
+    return provider!.bloc;
   }
 }
 
@@ -57,7 +58,7 @@ class _BlocProviderState<T extends BaseBloc> extends State<BlocProvider<T>> {
 }
 
 class _BlocProviderInherited<T> extends InheritedWidget {
-  _BlocProviderInherited({Key key, @required Widget child, @required this.bloc})
+  _BlocProviderInherited({Key? key, required Widget child, required this.bloc})
       : super(key: key, child: child);
 
   final T bloc;
