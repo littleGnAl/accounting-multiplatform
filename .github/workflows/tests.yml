@@ -54,6 +54,10 @@ jobs:
         with:
           flutter-version: ${{ matrix.version }}
           cache: true
+      - name: Generate dummy framework
+        run: |
+          cd kmp
+          ./gradlew :shared:generateDummyFramework
       - run: flutter packages get -v
       - run: |
           cd ios
